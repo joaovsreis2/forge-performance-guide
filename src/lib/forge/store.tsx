@@ -81,7 +81,9 @@ const initialState: ForgeState = {
 
 export const XP_PER_LEVEL = 800;
 
-export const workoutExercises: PlanExercise[] = todaysWorkout.exercises;
+export const workoutExercises: PlanExercise[] = (todaysWorkout?.exercises ?? []) as PlanExercise[];
+
+export const exAt = (i: number): PlanExercise => workoutExercises[Math.min(i, workoutExercises.length - 1)] as PlanExercise;
 export const totalPlannedSets = workoutExercises.reduce((n, e) => n + e.sets, 0);
 
 type Ctx = {
@@ -108,7 +110,7 @@ const ForgeContext = createContext<Ctx | null>(null);
 function nextPosition(state: ForgeState) {
   const s = state.session;
   if (!s) return null;
-  const ex = workoutExercises[s.exerciseIndex];
+  const ex = exAt(s.exerciseIndex);
   if (!ex) return null;
   if (s.setIndex + 1 < ex.sets) {
     return { exerciseIndex: s.exerciseIndex, setIndex: s.setIndex + 1 };
@@ -187,7 +189,7 @@ export function ForgeProvider({ children }: { children: ReactNode }) {
         if (now - lock.current < 700) return;
         lock.current = now;
         patchSession((s, prev) => {
-          const ex = workoutExercises[s.exerciseIndex];
+          const ex = exAt(s.exerciseIndex);
           const log: LoggedSet = {
             exerciseId: ex.id,
             exerciseName: ex.name,
@@ -217,7 +219,7 @@ export function ForgeProvider({ children }: { children: ReactNode }) {
       },
       skipSet: () =>
         patchSession((s, prev) => {
-          const ex = workoutExercises[s.exerciseIndex];
+          const ex = exAt(s.exerciseIndex);
           const pos = nextPosition(prev);
           return {
             session: {
@@ -244,7 +246,7 @@ export function ForgeProvider({ children }: { children: ReactNode }) {
         }),
       skipExercise: () =>
         patchSession((s) => {
-          const ex = workoutExercises[s.exerciseIndex];
+          const ex = exAt(s.exerciseIndex);
           const hasNext = s.exerciseIndex + 1 < workoutExercises.length;
           return {
             session: {
