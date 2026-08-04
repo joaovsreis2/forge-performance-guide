@@ -14,6 +14,7 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PlanRouteImport } from './routes/plan'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as ProgressIndexRouteImport } from './routes/progress/index'
+import { Route as ProgressExerciseRouteImport } from './routes/progress/exercise'
 import { Route as WorkoutIndexRouteImport } from './routes/workout/index'
 import { Route as WorkoutActiveRouteImport } from './routes/workout/active'
 import { Route as WorkoutSummaryRouteImport } from './routes/workout/summary'
@@ -43,6 +44,11 @@ const ProgressIndexRoute = ProgressIndexRouteImport.update({
   path: '/progress/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProgressExerciseRoute = ProgressExerciseRouteImport.update({
+  id: '/progress/exercise',
+  path: '/progress/exercise',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WorkoutIndexRoute = WorkoutIndexRouteImport.update({
   id: '/workout/',
   path: '/workout/',
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingRoute
   '/plan': typeof PlanRoute
   '/signin': typeof SigninRoute
+  '/progress/exercise': typeof ProgressExerciseRoute
   '/workout/active': typeof WorkoutActiveRoute
   '/workout/summary': typeof WorkoutSummaryRoute
   '/progress/': typeof ProgressIndexRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof OnboardingRoute
   '/plan': typeof PlanRoute
   '/signin': typeof SigninRoute
+  '/progress/exercise': typeof ProgressExerciseRoute
   '/workout/active': typeof WorkoutActiveRoute
   '/workout/summary': typeof WorkoutSummaryRoute
   '/progress': typeof ProgressIndexRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/onboarding': typeof OnboardingRoute
   '/plan': typeof PlanRoute
   '/signin': typeof SigninRoute
+  '/progress/exercise': typeof ProgressExerciseRoute
   '/workout/active': typeof WorkoutActiveRoute
   '/workout/summary': typeof WorkoutSummaryRoute
   '/progress/': typeof ProgressIndexRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/plan'
     | '/signin'
+    | '/progress/exercise'
     | '/workout/active'
     | '/workout/summary'
     | '/progress/'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/plan'
     | '/signin'
+    | '/progress/exercise'
     | '/workout/active'
     | '/workout/summary'
     | '/progress'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/plan'
     | '/signin'
+    | '/progress/exercise'
     | '/workout/active'
     | '/workout/summary'
     | '/progress/'
@@ -128,6 +140,7 @@ export interface RootRouteChildren {
   OnboardingRoute: typeof OnboardingRoute
   PlanRoute: typeof PlanRoute
   SigninRoute: typeof SigninRoute
+  ProgressExerciseRoute: typeof ProgressExerciseRoute
   WorkoutActiveRoute: typeof WorkoutActiveRoute
   WorkoutSummaryRoute: typeof WorkoutSummaryRoute
   ProgressIndexRoute: typeof ProgressIndexRoute
@@ -171,6 +184,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProgressIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/progress/exercise': {
+      id: '/progress/exercise'
+      path: '/progress/exercise'
+      fullPath: '/progress/exercise'
+      preLoaderRoute: typeof ProgressExerciseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/workout/': {
       id: '/workout/'
       path: '/workout'
@@ -200,6 +220,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingRoute: OnboardingRoute,
   PlanRoute: PlanRoute,
   SigninRoute: SigninRoute,
+  ProgressExerciseRoute: ProgressExerciseRoute,
   WorkoutActiveRoute: WorkoutActiveRoute,
   WorkoutSummaryRoute: WorkoutSummaryRoute,
   ProgressIndexRoute: ProgressIndexRoute,
