@@ -15,6 +15,7 @@ import { Route as PlanRouteImport } from './routes/plan'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as ProgressIndexRouteImport } from './routes/progress/index'
 import { Route as ProgressExerciseRouteImport } from './routes/progress/exercise'
+import { Route as ProgressLevelsRouteImport } from './routes/progress/levels'
 import { Route as ProgressMeasurementsRouteImport } from './routes/progress/measurements'
 import { Route as ProgressRecoveryRouteImport } from './routes/progress/recovery'
 import { Route as WorkoutIndexRouteImport } from './routes/workout/index'
@@ -51,6 +52,11 @@ const ProgressIndexRoute = ProgressIndexRouteImport.update({
 const ProgressExerciseRoute = ProgressExerciseRouteImport.update({
   id: '/progress/exercise',
   path: '/progress/exercise',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgressLevelsRoute = ProgressLevelsRouteImport.update({
+  id: '/progress/levels',
+  path: '/progress/levels',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProgressMeasurementsRoute = ProgressMeasurementsRouteImport.update({
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/plan': typeof PlanRoute
   '/signin': typeof SigninRoute
   '/progress/exercise': typeof ProgressExerciseRoute
+  '/progress/levels': typeof ProgressLevelsRoute
   '/progress/measurements': typeof ProgressMeasurementsRoute
   '/progress/recovery': typeof ProgressRecoveryRoute
   '/workout/active': typeof WorkoutActiveRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/plan': typeof PlanRoute
   '/signin': typeof SigninRoute
   '/progress/exercise': typeof ProgressExerciseRoute
+  '/progress/levels': typeof ProgressLevelsRoute
   '/progress/measurements': typeof ProgressMeasurementsRoute
   '/progress/recovery': typeof ProgressRecoveryRoute
   '/workout/active': typeof WorkoutActiveRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/plan': typeof PlanRoute
   '/signin': typeof SigninRoute
   '/progress/exercise': typeof ProgressExerciseRoute
+  '/progress/levels': typeof ProgressLevelsRoute
   '/progress/measurements': typeof ProgressMeasurementsRoute
   '/progress/recovery': typeof ProgressRecoveryRoute
   '/workout/active': typeof WorkoutActiveRoute
@@ -143,6 +152,7 @@ export interface FileRouteTypes {
     | '/plan'
     | '/signin'
     | '/progress/exercise'
+    | '/progress/levels'
     | '/progress/measurements'
     | '/progress/recovery'
     | '/workout/active'
@@ -158,6 +168,7 @@ export interface FileRouteTypes {
     | '/plan'
     | '/signin'
     | '/progress/exercise'
+    | '/progress/levels'
     | '/progress/measurements'
     | '/progress/recovery'
     | '/workout/active'
@@ -173,6 +184,7 @@ export interface FileRouteTypes {
     | '/plan'
     | '/signin'
     | '/progress/exercise'
+    | '/progress/levels'
     | '/progress/measurements'
     | '/progress/recovery'
     | '/workout/active'
@@ -189,6 +201,7 @@ export interface RootRouteChildren {
   PlanRoute: typeof PlanRoute
   SigninRoute: typeof SigninRoute
   ProgressExerciseRoute: typeof ProgressExerciseRoute
+  ProgressLevelsRoute: typeof ProgressLevelsRoute
   ProgressMeasurementsRoute: typeof ProgressMeasurementsRoute
   ProgressRecoveryRoute: typeof ProgressRecoveryRoute
   WorkoutActiveRoute: typeof WorkoutActiveRoute
@@ -241,6 +254,13 @@ declare module '@tanstack/react-router' {
       path: '/progress/exercise'
       fullPath: '/progress/exercise'
       preLoaderRoute: typeof ProgressExerciseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/progress/levels': {
+      id: '/progress/levels'
+      path: '/progress/levels'
+      fullPath: '/progress/levels'
+      preLoaderRoute: typeof ProgressLevelsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/progress/measurements': {
@@ -301,6 +321,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlanRoute: PlanRoute,
   SigninRoute: SigninRoute,
   ProgressExerciseRoute: ProgressExerciseRoute,
+  ProgressLevelsRoute: ProgressLevelsRoute,
   ProgressMeasurementsRoute: ProgressMeasurementsRoute,
   ProgressRecoveryRoute: ProgressRecoveryRoute,
   WorkoutActiveRoute: WorkoutActiveRoute,
