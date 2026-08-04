@@ -4,7 +4,7 @@ import { AppShell } from "@/components/forge/AppShell";
 import { GateFallback, useAppGate } from "@/components/forge/Gate";
 import { history } from "@/lib/forge/data";
 
-export const Route = createFileRoute("/progress/history")({
+export const Route = createFileRoute("/progress/history/")({
   head: () => ({
     meta: [
       { title: "Training history — Forge" },

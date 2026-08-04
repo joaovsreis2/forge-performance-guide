@@ -18,6 +18,7 @@ import { Route as ProgressExerciseRouteImport } from './routes/progress/exercise
 import { Route as WorkoutIndexRouteImport } from './routes/workout/index'
 import { Route as WorkoutActiveRouteImport } from './routes/workout/active'
 import { Route as WorkoutSummaryRouteImport } from './routes/workout/summary'
+import { Route as ProgressHistoryIndexRouteImport } from './routes/progress/history.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -64,6 +65,11 @@ const WorkoutSummaryRoute = WorkoutSummaryRouteImport.update({
   path: '/workout/summary',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProgressHistoryIndexRoute = ProgressHistoryIndexRouteImport.update({
+  id: '/progress/history/',
+  path: '/progress/history/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/workout/summary': typeof WorkoutSummaryRoute
   '/progress/': typeof ProgressIndexRoute
   '/workout/': typeof WorkoutIndexRoute
+  '/progress/history/': typeof ProgressHistoryIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -86,6 +93,7 @@ export interface FileRoutesByTo {
   '/workout/summary': typeof WorkoutSummaryRoute
   '/progress': typeof ProgressIndexRoute
   '/workout': typeof WorkoutIndexRoute
+  '/progress/history': typeof ProgressHistoryIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -98,6 +106,7 @@ export interface FileRoutesById {
   '/workout/summary': typeof WorkoutSummaryRoute
   '/progress/': typeof ProgressIndexRoute
   '/workout/': typeof WorkoutIndexRoute
+  '/progress/history/': typeof ProgressHistoryIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,6 +120,7 @@ export interface FileRouteTypes {
     | '/workout/summary'
     | '/progress/'
     | '/workout/'
+    | '/progress/history/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
     | '/workout/summary'
     | '/progress'
     | '/workout'
+    | '/progress/history'
   id:
     | '__root__'
     | '/'
@@ -133,6 +144,7 @@ export interface FileRouteTypes {
     | '/workout/summary'
     | '/progress/'
     | '/workout/'
+    | '/progress/history/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -145,6 +157,7 @@ export interface RootRouteChildren {
   WorkoutSummaryRoute: typeof WorkoutSummaryRoute
   ProgressIndexRoute: typeof ProgressIndexRoute
   WorkoutIndexRoute: typeof WorkoutIndexRoute
+  ProgressHistoryIndexRoute: typeof ProgressHistoryIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -212,6 +225,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkoutSummaryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/progress/history/': {
+      id: '/progress/history/'
+      path: '/progress/history'
+      fullPath: '/progress/history/'
+      preLoaderRoute: typeof ProgressHistoryIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -225,6 +245,7 @@ const rootRouteChildren: RootRouteChildren = {
   WorkoutSummaryRoute: WorkoutSummaryRoute,
   ProgressIndexRoute: ProgressIndexRoute,
   WorkoutIndexRoute: WorkoutIndexRoute,
+  ProgressHistoryIndexRoute: ProgressHistoryIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
