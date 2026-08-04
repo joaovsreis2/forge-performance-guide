@@ -11,6 +11,8 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { ForgeProvider } from "../lib/forge/store";
+
 
 function NotFoundComponent() {
   return (
