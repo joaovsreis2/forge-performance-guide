@@ -89,7 +89,7 @@ function PlanPage() {
 
           <div className="mt-8">
             <ActionLink to="/workout" tone="outline">
-              Abrir sessão de hoje
+              Ver treino de hoje
             </ActionLink>
           </div>
         </>

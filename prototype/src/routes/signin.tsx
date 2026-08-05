@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Wordmark } from "@/components/forge/AppShell";
 import { Action, SystemState } from "@/components/forge/ui";
 import { useForge } from "@/lib/forge/store";
@@ -23,6 +23,9 @@ function SignIn() {
   const [password, setPassword] = useState("prototype");
   const [error, setError] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [authFeedback, setAuthFeedback] = useState<"recovery" | "signup" | null>(null);
+  const recoveryButtonRef = useRef<HTMLButtonElement>(null);
+  const signupButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (state.hydrated && state.phase === "app") navigate({ to: "/" });
@@ -97,18 +100,53 @@ function SignIn() {
 
         <div className="mt-6 flex flex-col items-start gap-1">
           <button
+            ref={recoveryButtonRef}
             type="button"
+            onClick={() => setAuthFeedback("recovery")}
             className="tap text-sm text-muted-foreground underline-offset-4 hover:underline"
           >
             Recuperar senha
           </button>
           <button
+            ref={signupButtonRef}
             type="button"
+            onClick={() => setAuthFeedback("signup")}
             className="tap text-sm text-muted-foreground underline-offset-4 hover:underline"
           >
             Criar conta
           </button>
         </div>
+
+        {authFeedback ? (
+          <div className="mt-5">
+            <SystemState
+              kind="info"
+              title={
+                authFeedback === "recovery"
+                  ? "Recuperação de senha não disponível neste protótipo."
+                  : "Criação de conta não disponível neste protótipo."
+              }
+              body={
+                authFeedback === "recovery"
+                  ? "Nenhum e-mail de recuperação foi enviado."
+                  : "Use a conta demonstrativa para revisar o fluxo atual."
+              }
+              action={
+                <Action
+                  tone="ghost"
+                  onClick={() => {
+                    const trigger =
+                      authFeedback === "recovery" ? recoveryButtonRef : signupButtonRef;
+                    setAuthFeedback(null);
+                    window.requestAnimationFrame(() => trigger.current?.focus());
+                  }}
+                >
+                  Fechar
+                </Action>
+              }
+            />
+          </div>
+        ) : null}
       </div>
       <p className="text-center text-xs text-subtle">Protótipo — sem autenticação real.</p>
     </div>

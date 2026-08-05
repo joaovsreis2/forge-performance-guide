@@ -193,11 +193,28 @@ function Onboarding() {
               )}
             </div>
             {!planReady ? (
-              <Action tone="outline" className="mt-4 w-full" onClick={() => setPlanReady(true)}>
-                Confirmar plano atribuído
-              </Action>
+              <div className="mt-4">
+                <p id="plan-confirmation-help" className="text-sm font-medium text-foreground">
+                  Confirme o plano atribuído para continuar.
+                </p>
+                <Action
+                  tone="outline"
+                  className="mt-3 w-full"
+                  aria-describedby="plan-confirmation-help"
+                  onClick={() => {
+                    setPlanReady(true);
+                    window.requestAnimationFrame(() =>
+                      document.getElementById("onboarding-continue")?.focus(),
+                    );
+                  }}
+                >
+                  Confirmar plano atribuído
+                </Action>
+              </div>
             ) : (
-              <p className="mt-4 text-sm text-muted-foreground">Seu plano está atribuído.</p>
+              <p className="mt-4 text-sm text-ok" role="status">
+                Plano confirmado. Você já pode continuar.
+              </p>
             )}
           </div>
         ) : null}
@@ -223,9 +240,11 @@ function Onboarding() {
       <div className="mx-auto w-full max-w-sm space-y-2">
         {step < 4 ? (
           <Action
+            id="onboarding-continue"
             size="lg"
             className="w-full"
             disabled={step === 3 && !planReady}
+            aria-describedby={step === 3 && !planReady ? "plan-confirmation-help" : undefined}
             onClick={() => {
               if (step === 1)
                 set({ goal: GOALS.find((g) => g.id === goal)?.label ?? "Ganhar força" });

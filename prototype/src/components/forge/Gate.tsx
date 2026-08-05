@@ -4,15 +4,16 @@ import { useForge } from "@/lib/forge/store";
 import { Skeleton } from "./ui";
 
 /** Client-side prototype gate: sign in -> onboarding -> app. */
-export function useAppGate() {
+export function useAppGate({ redirect = true }: { redirect?: boolean } = {}) {
   const { state } = useForge();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!state.hydrated) return;
+    if (!redirect) return;
     if (state.phase === "signin") navigate({ to: "/signin" });
     else if (state.phase === "onboarding") navigate({ to: "/onboarding" });
-  }, [state.hydrated, state.phase, navigate]);
+  }, [state.hydrated, state.phase, navigate, redirect]);
 
   return state.hydrated && state.phase === "app";
 }

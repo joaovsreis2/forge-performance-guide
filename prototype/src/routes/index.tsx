@@ -124,7 +124,7 @@ function ScheduledState() {
         </p>
 
         <ActionLink to="/workout" size="lg" className="mt-4 w-full sm:w-auto sm:min-w-64">
-          Iniciar treino <ArrowRight aria-hidden className="size-4" />
+          Ver treino de hoje <ArrowRight aria-hidden className="size-4" />
         </ActionLink>
 
         <div className="mt-3">

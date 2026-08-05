@@ -25,6 +25,7 @@ function AccountPage() {
   const { state, set, toggleTheme, signOut } = useForge();
   const navigate = useNavigate();
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [securityOpen, setSecurityOpen] = useState(false);
 
   return (
     <AppShell eyebrow="Ajustes" title="Conta">
@@ -105,8 +106,32 @@ function AccountPage() {
                 sub="Lembretes de sessão, resumo semanal"
                 right={<span>2 ativas</span>}
               />
-              <Row label="Segurança" sub="Senha e sessões" right={<span>Gerenciar</span>} />
+              <Row
+                label="Segurança"
+                sub="Senha e sessões"
+                right={
+                  <button
+                    type="button"
+                    aria-expanded={securityOpen}
+                    aria-controls="security-prototype-actions"
+                    onClick={() => setSecurityOpen((open) => !open)}
+                    className="tap rounded-md border border-border px-3 text-xs text-foreground"
+                  >
+                    {securityOpen ? "Fechar" : "Gerenciar"}
+                  </button>
+                }
+              />
             </Rows>
+
+            {securityOpen ? (
+              <div id="security-prototype-actions" className="mt-3">
+                <SystemState
+                  kind="info"
+                  title="Configurações de segurança não disponíveis neste protótipo."
+                  body="Nenhuma senha ou sessão real pode ser alterada nesta demonstração."
+                />
+              </div>
+            ) : null}
           </Section>
 
           <Section title="Sessão">
