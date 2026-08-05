@@ -3,10 +3,12 @@ import {
   ChevronDown,
   Info,
   MoreHorizontal,
+  Pause,
   SkipForward,
   Volume2,
   VolumeX,
   Smartphone,
+  Trophy,
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -16,11 +18,13 @@ import {
   exAt,
   formatClock,
   totalPlannedSets,
+  useActiveElapsed,
   useCountdown,
-  useElapsed,
   useForge,
   workoutExercises,
+  type LoggedSet,
 } from "@/lib/forge/store";
+import { formatKg } from "@/lib/forge/records";
 import { todaysWorkout } from "@/lib/forge/data";
 
 export const Route = createFileRoute("/workout/active")({
@@ -40,8 +44,17 @@ export const Route = createFileRoute("/workout/active")({
 });
 
 function ActiveWorkout() {
-  const { state, completeSet, skipSet, skipExercise, continueRest, addRest, finishWorkout } =
-    useForge();
+  const {
+    state,
+    completeSet,
+    skipSet,
+    skipExercise,
+    continueRest,
+    addRest,
+    pauseWorkout,
+    resumeWorkout,
+    finishWorkout,
+  } = useForge();
   const navigate = useNavigate();
   const session = state.session;
 
@@ -55,8 +68,9 @@ function ActiveWorkout() {
   const exerciseIndex = session?.exerciseIndex ?? 0;
   const setIndex = session?.setIndex ?? 0;
   const exercise = exAt(exerciseIndex);
-  const elapsed = useElapsed(session?.startedAt ?? null);
-  const remaining = useCountdown(session?.restEndsAt ?? null);
+  const elapsed = useActiveElapsed(session);
+  const restEndsAt = session?.rest?.endsAt ?? null;
+  const remaining = useCountdown(restEndsAt);
 
   useEffect(() => {
     setWeight(exercise.suggestedWeight);
@@ -64,15 +78,16 @@ function ActiveWorkout() {
   }, [exercise.id, exercise.suggestedWeight, exercise.repHigh]);
 
   useEffect(() => {
-    if (session?.restEndsAt && remaining === 0) continueRest();
-  }, [remaining, session?.restEndsAt, continueRest]);
+    if (restEndsAt && remaining === 0) continueRest();
+  }, [remaining, restEndsAt, continueRest]);
 
   useEffect(() => {
-    if (session?.finishedAt) {
-      finishWorkout("completed");
+    if (session?.finishedAt && !session.rest) {
+      const validSets = session.logs.filter((l) => !l.skipped).length;
+      finishWorkout(validSets >= totalPlannedSets ? "completed" : "partial");
       navigate({ to: "/workout/summary" });
     }
-  }, [session?.finishedAt, finishWorkout, navigate]);
+  }, [session?.finishedAt, session?.rest, session?.logs, finishWorkout, navigate]);
 
   if (!state.hydrated) return null;
 
@@ -91,8 +106,103 @@ function ActiveWorkout() {
 
   const loggedSets = session.logs.filter((l) => !l.skipped).length;
   const progress = Math.round((session.logs.length / totalPlannedSets) * 100);
-  const resting = Boolean(session.restEndsAt) && remaining > 0;
-  const nextIsNewExercise = setIndex === 0;
+  const resting = Boolean(session.rest) && remaining > 0;
+  const paused = session.status === "paused";
+
+  if (paused) {
+    return (
+      <main className="mx-auto max-w-md px-5 py-12">
+        <p className="eyebrow">Sessão pausada</p>
+        <h1 className="mt-1 text-2xl font-semibold text-foreground">{todaysWorkout!.name}</h1>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          O cronômetro está parado. O tempo em pausa não conta como duração do treino.
+        </p>
+        <dl className="num mt-6 grid grid-cols-2 gap-4 border-t border-border pt-5">
+          <div>
+            <dd className="text-xl font-semibold text-foreground">{formatClock(elapsed)}</dd>
+            <dt className="mt-0.5 text-xs text-muted-foreground">Tempo ativo</dt>
+          </div>
+          <div>
+            <dd className="text-xl font-semibold text-foreground">
+              {loggedSets}
+              <span className="text-sm font-normal text-muted-foreground">/{totalPlannedSets}</span>
+            </dd>
+            <dt className="mt-0.5 text-xs text-muted-foreground">Séries registradas</dt>
+          </div>
+        </dl>
+        <div className="mt-8 space-y-2">
+          <Action size="lg" className="w-full" onClick={resumeWorkout}>
+            Retomar treino
+          </Action>
+          <Action tone="outline" className="w-full" onClick={() => setConfirmIncomplete(true)}>
+            Encerrar como parcial
+          </Action>
+          <Action tone="ghost" className="w-full" onClick={() => setConfirmCancel(true)}>
+            Cancelar treino
+          </Action>
+        </div>
+
+        {confirmIncomplete ? (
+          <Overlay onClose={() => setConfirmIncomplete(false)} label="Encerrar como parcial">
+            <h2 className="text-base font-semibold text-foreground">Encerrar como parcial?</h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              Suas {loggedSets} séries registradas serão salvas e a sessão será marcada como
+              parcialmente concluída.
+            </p>
+            <div className="mt-5 space-y-2">
+              <Action
+                className="w-full"
+                onClick={() => {
+                  finishWorkout("partial");
+                  navigate({ to: "/workout/summary" });
+                }}
+              >
+                Encerrar e salvar
+              </Action>
+              <Action tone="outline" className="w-full" onClick={() => setConfirmIncomplete(false)}>
+                Voltar
+              </Action>
+            </div>
+          </Overlay>
+        ) : null}
+
+        {confirmCancel ? (
+          <Overlay onClose={() => setConfirmCancel(false)} label="Confirmar cancelamento">
+            <h2 className="text-base font-semibold text-foreground">Cancelar este treino?</h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              As {loggedSets} séries já registradas continuam no histórico como sessão cancelada.
+              Sessões canceladas não geram experiência.
+            </p>
+            <div className="mt-5 space-y-2">
+              <Action
+                tone="danger"
+                className="w-full"
+                onClick={() => {
+                  finishWorkout("cancelled");
+                  navigate({ to: "/workout/summary" });
+                }}
+              >
+                Sim, cancelar treino
+              </Action>
+              <Action tone="outline" className="w-full" onClick={() => setConfirmCancel(false)}>
+                Voltar
+              </Action>
+            </div>
+          </Overlay>
+        ) : null}
+      </main>
+    );
+  }
+
+  const rest = session.rest;
+  const upcoming = rest?.next ? exAt(rest.next.exerciseIndex) : null;
+  const lastRecord = session.records[session.records.length - 1];
+  const justSetRecord =
+    rest && lastRecord && lastRecord.exerciseId === rest.log.exerciseId
+      ? session.logs[session.logs.length - 1] === rest.log
+        ? lastRecord
+        : null
+      : null;
 
   return (
     <div className="min-h-dvh bg-background pb-40">
@@ -152,16 +262,22 @@ function ActiveWorkout() {
           </div>
         ) : null}
 
-        {resting ? (
+        {resting && rest ? (
           <RestPanel
             remaining={remaining}
-            total={session.restTotal}
-            nextLabel={
-              nextIsNewExercise
-                ? `Próximo: ${exercise.name} · série 1 de ${exercise.sets}`
-                : `Próximo: ${exercise.name} · série ${setIndex + 1} de ${exercise.sets}`
+            total={rest.total}
+            completed={rest.log}
+            recordLabel={justSetRecord ? justSetRecord.previous : null}
+            upcoming={
+              upcoming && rest.next
+                ? {
+                    name: upcoming.name,
+                    setLabel: `Série ${rest.next.setIndex + 1} de ${upcoming.sets}`,
+                    target: `${upcoming.repLow}–${upcoming.repHigh} reps`,
+                    suggested: `${formatKg(upcoming.suggestedWeight)} kg sugeridos`,
+                  }
+                : null
             }
-            target={`${exercise.repLow}–${exercise.repHigh} reps`}
             sound={state.sound}
             vibration={state.vibration}
             onContinue={continueRest}
@@ -223,7 +339,7 @@ function ActiveWorkout() {
                     >
                       <span className="text-muted-foreground">Série {l.setIndex + 1}</span>
                       <span className="text-foreground">
-                        {l.skipped ? "Pulada" : `${l.weight} kg × ${l.reps}`}
+                        {l.skipped ? "Pulada" : `${formatKg(l.weight)} kg × ${l.reps}`}
                         {!l.synced ? (
                           <span className="ml-2 text-warn">· neste dispositivo</span>
                         ) : null}
@@ -279,10 +395,11 @@ function ActiveWorkout() {
               className="w-full"
               onClick={() => {
                 setMenuOpen(false);
+                pauseWorkout();
                 navigate({ to: "/" });
               }}
             >
-              Retomar depois
+              <Pause aria-hidden className="size-4" /> Retomar depois
             </Action>
             <Action
               tone="danger"
@@ -303,7 +420,7 @@ function ActiveWorkout() {
           <h2 className="text-base font-semibold text-foreground">Cancelar este treino?</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
             As {loggedSets} séries que você já registrou serão mantidas no histórico de treinos como
-            uma sessão cancelada. As séries restantes não serão registradas, e seu plano permanece
+            uma sessão cancelada. Sessões canceladas não geram experiência, e seu plano permanece
             inalterado.
           </p>
           <div className="mt-5 space-y-2">
@@ -337,7 +454,7 @@ function ActiveWorkout() {
             <Action
               className="w-full"
               onClick={() => {
-                finishWorkout("completed");
+                finishWorkout("partial");
                 navigate({ to: "/workout/summary" });
               }}
             >
@@ -356,8 +473,9 @@ function ActiveWorkout() {
 function RestPanel({
   remaining,
   total,
-  nextLabel,
-  target,
+  completed,
+  recordLabel,
+  upcoming,
   sound,
   vibration,
   onContinue,
@@ -365,8 +483,9 @@ function RestPanel({
 }: {
   remaining: number;
   total: number;
-  nextLabel: string;
-  target: string;
+  completed: LoggedSet;
+  recordLabel: string | null;
+  upcoming: { name: string; setLabel: string; target: string; suggested: string } | null;
   sound: boolean;
   vibration: boolean;
   onContinue: () => void;
@@ -382,10 +501,31 @@ function RestPanel({
         de {formatClock(total)} de descanso planejado
       </p>
 
+      {/* what was just completed */}
       <div className="mx-auto mt-6 max-w-xs rounded-xl border border-border bg-surface p-4 text-left">
-        <p className="text-sm font-medium text-foreground">{nextLabel}</p>
-        <p className="num mt-1 text-xs text-muted-foreground">Alvo {target}</p>
+        <p className="eyebrow">Série concluída</p>
+        <p className="mt-1.5 text-sm font-medium text-foreground">{completed.exerciseName}</p>
+        <p className="num mt-0.5 text-sm text-muted-foreground">
+          Série {completed.setIndex + 1} · {formatKg(completed.weight)} kg × {completed.reps} reps
+        </p>
+        {recordLabel ? (
+          <p className="mt-2 inline-flex items-center gap-1.5 text-xs text-primary">
+            <Trophy aria-hidden className="size-3.5" /> Recorde pessoal · antes {recordLabel}
+          </p>
+        ) : null}
       </div>
+
+      {/* what comes next */}
+      {upcoming ? (
+        <div className="mx-auto mt-3 max-w-xs rounded-xl border border-border bg-surface p-4 text-left">
+          <p className="eyebrow">A seguir</p>
+          <p className="mt-1.5 text-sm font-medium text-foreground">{upcoming.name}</p>
+          <p className="num mt-0.5 text-sm text-muted-foreground">
+            {upcoming.setLabel} · alvo {upcoming.target}
+          </p>
+          <p className="num mt-0.5 text-xs text-muted-foreground">{upcoming.suggested}</p>
+        </div>
+      ) : null}
 
       <div className="mt-6 space-y-2">
         <Action size="lg" className="w-full" onClick={onContinue}>
