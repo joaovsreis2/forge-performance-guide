@@ -98,7 +98,7 @@ export const personalRecordRegistry: Record<string, ExerciseRecords> = {
     repsByWeight: { "12.5": 12, "14": 10 },
     date: "20 mar",
   },
-  deadlift: {
+  dl: {
     maxWeight: 130,
     maxWeightReps: 4,
     repsByWeight: { "125": 5, "130": 4 },
@@ -110,7 +110,7 @@ export const personalRecordRegistry: Record<string, ExerciseRecords> = {
     repsByWeight: { "70": 8, "75": 6 },
     date: "12 mar",
   },
-  legext: {
+  legextension: {
     maxWeight: 55,
     maxWeightReps: 12,
     repsByWeight: { "50": 14, "55": 12 },
