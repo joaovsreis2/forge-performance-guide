@@ -1,0 +1,14 @@
+{
+  "name": "forge",
+  "private": true,
+  "type": "module",
+  "workspaces": ["prototype"],
+  "scripts": {
+    "dev": "cd prototype && vite dev",
+    "build": "cd prototype && vite build",
+    "build:dev": "cd prototype && vite build --mode development",
+    "preview": "cd prototype && vite preview",
+    "lint": "cd prototype && eslint .",
+    "format": "cd prototype && prettier --write ."
+  }
+}
