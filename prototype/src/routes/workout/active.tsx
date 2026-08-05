@@ -372,11 +372,13 @@ function RestPanel({
   onContinue: () => void;
   onAdd: () => void;
 }) {
+  const displayedRemaining = Math.min(remaining, total);
+
   return (
     <section aria-live="polite" className="pt-4 text-center">
       <p className="eyebrow">Descanso</p>
       <p className="num mt-3 text-[4.5rem] font-semibold leading-none text-foreground">
-        {formatClock(remaining)}
+        {formatClock(displayedRemaining)}
       </p>
       <p className="num mt-2 text-xs text-muted-foreground">
         de {formatClock(total)} de descanso planejado
