@@ -2,13 +2,15 @@
   "name": "forge",
   "private": true,
   "type": "module",
-  "workspaces": ["prototype"],
+  "workspaces": [
+    "prototype"
+  ],
   "scripts": {
-    "dev": "cd prototype && vite dev",
-    "build": "cd prototype && vite build",
-    "build:dev": "cd prototype && vite build --mode development",
-    "preview": "cd prototype && vite preview",
-    "lint": "cd prototype && eslint .",
-    "format": "cd prototype && prettier --write ."
+    "dev": "cd prototype && ./node_modules/.bin/vite dev",
+    "build": "cd prototype && ./node_modules/.bin/vite build",
+    "build:dev": "cd prototype && ./node_modules/.bin/vite build --mode development",
+    "preview": "cd prototype && ./node_modules/.bin/vite preview",
+    "lint": "cd prototype && ./node_modules/.bin/eslint .",
+    "format": "cd prototype && ./node_modules/.bin/prettier --write ."
   }
 }
