@@ -98,7 +98,10 @@ function Levels() {
             </Rows>
           </Section>
 
-          <Section title="Regras de experiência" hint={`Limite diário de ${XP_RULES.dailyLimit} XP`}>
+          <Section
+            title="Regras de experiência"
+            hint={`Limite diário de ${XP_RULES.dailyLimit} XP`}
+          >
             <Rows>
               {XP_RULE_ROWS.map((rule) => (
                 <Row
@@ -141,7 +144,6 @@ function Levels() {
                   ))}
             </Rows>
           </Section>
-
 
           <Section title="Conquistas">
             <Rows>

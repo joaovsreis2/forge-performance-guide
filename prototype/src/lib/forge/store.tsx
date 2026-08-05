@@ -380,7 +380,9 @@ export function ForgeProvider({ children }: { children: ReactNode }) {
               ...s,
               logs: [...s.logs, log],
               records: record ? [...s.records, record] : s.records,
-              rest: next ? { log, endsAt: now + ex.restSeconds * 1000, total: ex.restSeconds, next } : null,
+              rest: next
+                ? { log, endsAt: now + ex.restSeconds * 1000, total: ex.restSeconds, next }
+                : null,
               finishedAt: next ? null : now,
             },
           };

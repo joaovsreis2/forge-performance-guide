@@ -72,9 +72,7 @@ function startOfDay(ts: number) {
 export function xpEarnedOnDay(events: XpEvent[], ts: number): number {
   const from = startOfDay(ts);
   const to = from + 86_400_000;
-  return events
-    .filter((e) => e.at >= from && e.at < to)
-    .reduce((total, e) => total + e.amount, 0);
+  return events.filter((e) => e.at >= from && e.at < to).reduce((total, e) => total + e.amount, 0);
 }
 
 /**
