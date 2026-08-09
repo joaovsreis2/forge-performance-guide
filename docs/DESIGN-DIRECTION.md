@@ -6,7 +6,7 @@ Version: 1.0.0
 
 Owner: João Victor
 
-Last Updated: 2026-08-07
+Last Updated: 2026-08-09
 
 Related Documents:
 
@@ -1344,6 +1344,10 @@ Before approving any screen, verify:
 # 31. MVP Screen Inventory
 
 The initial design must cover:
+
+## Global
+
+- Branded application launch
 
 ## Authentication
 

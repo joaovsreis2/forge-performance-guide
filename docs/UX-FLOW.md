@@ -6,7 +6,7 @@ Version: 1.0.0
 
 Owner: João Victor
 
-Last Updated: 2026-08-03
+Last Updated: 2026-08-09
 
 Related Documents:
 
@@ -130,6 +130,19 @@ Each journey is described through:
 ---
 
 # 4. Global Navigation Model
+
+## Application Launch
+
+When the client starts, Forge presents a branded launch surface while local state,
+authentication and remote training context are hydrated.
+
+The launch surface:
+
+- disappears as soon as hydration is complete;
+- never displays fake progress;
+- does not interrupt route resolution;
+- respects reduced-motion preferences;
+- keeps the underlying interface unavailable until it is ready.
 
 ## Primary Destinations
 

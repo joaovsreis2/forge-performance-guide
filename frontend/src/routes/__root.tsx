@@ -10,6 +10,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import { LaunchGate } from "../components/forge/LaunchScreen";
 import { ForgeProvider } from "../lib/forge/store";
 
 function NotFoundComponent() {
@@ -130,8 +131,10 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ForgeProvider>
         <PwaRegistration />
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
+        <LaunchGate>
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+        </LaunchGate>
       </ForgeProvider>
     </QueryClientProvider>
   );

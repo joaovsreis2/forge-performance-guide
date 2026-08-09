@@ -14,6 +14,18 @@ async function expectAccessiblePage(page: Page) {
   expect(hasHorizontalOverflow).toBeFalsy();
 }
 
+test("launch screen introduces the app and releases the interface", async ({ page }, testInfo) => {
+  await page.goto("/signin");
+
+  const launchScreen = page.getByRole("status", { name: "Abrindo Forge" });
+  await expect(launchScreen).toBeVisible();
+  await expect(launchScreen).toContainText("FORGE");
+  await expect(launchScreen).toContainText("Performance se constrói.");
+  await page.screenshot({ path: testInfo.outputPath("launch.png"), fullPage: true });
+  await expect(launchScreen).toBeHidden();
+  await expect(page.getByRole("button", { name: "Entrar" })).toBeEnabled();
+});
+
 test("sign-in is accessible and fits the viewport", async ({ page }) => {
   await page.goto("/signin");
   await expect(page.getByRole("button", { name: "Entrar" })).toBeEnabled();
