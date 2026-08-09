@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
+import { enterThroughLaunch } from "./launch";
 
 async function expectAccessiblePage(page: Page) {
   const results = await new AxeBuilder({ page }).analyze();
@@ -14,36 +15,36 @@ async function expectAccessiblePage(page: Page) {
   expect(hasHorizontalOverflow).toBeFalsy();
 }
 
-test("launch screen introduces the app and releases the interface", async ({ page }) => {
+test("launch screen builds while data loads and waits for entry", async ({ page }, testInfo) => {
   await page.goto("/signin");
 
-  const launchScreen = page.getByRole("status", { name: "Abrindo Forge" });
+  const launchScreen = page.getByRole("status", { name: "Preparando Forge" });
+  const enter = page.getByRole("button", { name: "Continuar para o Forge" });
   await expect(launchScreen).toBeVisible();
   await expect(launchScreen).toContainText("FORGE");
   await expect(launchScreen).toContainText("Performance se constrói.");
-  const viewport = page.viewportSize();
-  if (!viewport) throw new Error("Playwright viewport is required for the launch interaction");
-  await page.mouse.click(viewport.width / 2, viewport.height / 2);
-  await expect(launchScreen).toBeHidden({ timeout: 300 });
-  await expect
-    .poll(() =>
-      page.evaluate(
-        () => (window as Window & { __forgeLaunchSkipped?: boolean }).__forgeLaunchSkipped,
-      ),
-    )
-    .toBe(true);
-  await expect(page.getByRole("button", { name: "Entrar" })).toBeEnabled();
+  await expect(enter).toBeDisabled();
+  await expect(enter).toBeEnabled();
+  await expect(page.getByRole("status", { name: "Forge pronto para entrar" })).toContainText(
+    "ENTRAR",
+  );
+  await page.screenshot({ path: testInfo.outputPath("launch-ready.png"), fullPage: true });
+  await enter.click();
+  await expect(enter).toBeHidden();
+  await expect(page.getByRole("button", { name: "Entrar", exact: true })).toBeEnabled();
 });
 
 test("sign-in is accessible and fits the viewport", async ({ page }) => {
   await page.goto("/signin");
-  await expect(page.getByRole("button", { name: "Entrar" })).toBeEnabled();
+  await enterThroughLaunch(page);
+  await expect(page.getByRole("button", { name: "Entrar", exact: true })).toBeEnabled();
   await expectAccessiblePage(page);
 });
 
 test("Today is accessible and fits the viewport", async ({ page }, testInfo) => {
   await page.goto("/signin");
-  const submit = page.getByRole("button", { name: "Entrar" });
+  await enterThroughLaunch(page);
+  const submit = page.getByRole("button", { name: "Entrar", exact: true });
   await expect(submit).toBeEnabled();
   await submit.click();
   await expect(page.getByRole("heading", { name: "Hoje" })).toBeVisible();

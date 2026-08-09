@@ -138,10 +138,11 @@ authentication and remote training context are hydrated.
 
 The launch surface:
 
-- disappears as soon as hydration is complete;
 - never displays fake progress;
-- dismisses immediately when the user taps anywhere;
-- allows the destination screen to present its real loading state when hydration continues;
+- constructs the brand while application state hydrates in the background;
+- enables entry only after both construction and hydration are complete;
+- remains visible in its ready state until the user chooses to enter;
+- dismisses through a short transition after the user taps anywhere;
 - does not interrupt route resolution;
 - respects reduced-motion preferences;
 - keeps the underlying interface unavailable until it is ready.

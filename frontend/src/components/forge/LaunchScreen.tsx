@@ -1,46 +1,35 @@
+import { ArrowRight } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { useForge } from "@/lib/forge/store";
 
-const MINIMUM_VISIBLE_MS = 650;
-const READY_HOLD_MS = 700;
-const EXIT_DURATION_MS = 320;
+const CONSTRUCTION_DURATION_MS = 1_100;
+const EXIT_DURATION_MS = 280;
 
 type LaunchPhase = "visible" | "leaving" | "hidden";
 
 export function LaunchGate({ children }: { children: ReactNode }) {
   const { state } = useForge();
-  const [minimumElapsed, setMinimumElapsed] = useState(false);
+  const [constructed, setConstructed] = useState(false);
   const [phase, setPhase] = useState<LaunchPhase>("visible");
-  const [clientReady, setClientReady] = useState(false);
 
   useEffect(() => {
-    if ((window as Window & { __forgeLaunchSkipped?: boolean }).__forgeLaunchSkipped) {
-      setPhase("hidden");
-      return;
-    }
-
-    setClientReady(true);
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const timer = window.setTimeout(
-      () => setMinimumElapsed(true),
-      reduceMotion ? 0 : MINIMUM_VISIBLE_MS,
+      () => setConstructed(true),
+      reduceMotion ? 0 : CONSTRUCTION_DURATION_MS,
     );
     return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    if (!minimumElapsed || !state.hydrated) return;
-
-    const leaveTimer = window.setTimeout(() => setPhase("leaving"), READY_HOLD_MS);
-    const hideTimer = window.setTimeout(() => setPhase("hidden"), READY_HOLD_MS + EXIT_DURATION_MS);
-    return () => {
-      window.clearTimeout(leaveTimer);
-      window.clearTimeout(hideTimer);
-    };
-  }, [minimumElapsed, state.hydrated]);
+    if (phase !== "leaving") return;
+    const timer = window.setTimeout(() => setPhase("hidden"), EXIT_DURATION_MS);
+    return () => window.clearTimeout(timer);
+  }, [phase]);
 
   const isOpen = phase !== "hidden";
+  const isReady = constructed && state.hydrated;
 
   return (
     <>
@@ -50,8 +39,10 @@ export function LaunchGate({ children }: { children: ReactNode }) {
       {isOpen ? (
         <LaunchScreen
           phase={phase}
-          interactive={clientReady}
-          onActivate={() => setPhase("hidden")}
+          ready={isReady}
+          onActivate={() => {
+            if (isReady) setPhase("leaving");
+          }}
         />
       ) : null}
     </>
@@ -60,39 +51,39 @@ export function LaunchGate({ children }: { children: ReactNode }) {
 
 function LaunchScreen({
   phase,
-  interactive,
+  ready,
   onActivate,
 }: {
   phase: Exclude<LaunchPhase, "hidden">;
-  interactive: boolean;
+  ready: boolean;
   onActivate: () => void;
 }) {
   return (
     <section
       className="launch-screen fixed inset-0 z-[100] grid min-h-dvh place-items-center overflow-hidden bg-background px-6 text-foreground"
-      data-forge-launch
       data-phase={phase}
+      data-ready={ready || undefined}
       role="status"
-      aria-label="Abrindo Forge"
+      aria-live="polite"
+      aria-label={ready ? "Forge pronto para entrar" : "Preparando Forge"}
     >
       <button
         type="button"
-        className="launch-trigger absolute inset-0 z-10 cursor-pointer bg-transparent"
-        aria-label="Abrir Forge agora"
-        disabled={!interactive}
+        className="launch-trigger absolute inset-0 z-10 bg-transparent disabled:cursor-wait"
+        aria-label="Continuar para o Forge"
+        disabled={!ready}
         onClick={onActivate}
       />
 
       <div className="launch-brand pointer-events-none flex flex-col items-center text-center">
         <div className="launch-mark relative grid size-28 place-items-center">
-          <span aria-hidden className="launch-impact absolute size-20 rounded-[16px]" />
           <span
             aria-hidden
-            className="launch-corner absolute left-0 top-0 size-5 border-l border-t border-primary/55"
+            className="launch-corner launch-corner-start absolute left-0 top-0 size-5 border-l border-t border-primary/55"
           />
           <span
             aria-hidden
-            className="launch-corner absolute bottom-0 right-0 size-5 border-b border-r border-primary/55"
+            className="launch-corner launch-corner-end absolute bottom-0 right-0 size-5 border-b border-r border-primary/55"
           />
           <img
             src="/forge-icon.svg"
@@ -110,8 +101,16 @@ function LaunchScreen({
       </div>
 
       <div className="launch-footer pointer-events-none absolute inset-x-6 bottom-8 flex flex-col items-center gap-3 sm:bottom-10">
-        <span aria-hidden className="h-px w-12 bg-primary" />
-        <p className="text-[0.6875rem] font-medium text-subtle">PLATAFORMA DE PERFORMANCE</p>
+        <span aria-hidden className="launch-footer-line h-px w-12 bg-primary" />
+        <p className="launch-footer-label flex min-h-5 items-center gap-2 text-[0.6875rem] font-medium text-subtle">
+          {ready ? (
+            <>
+              ENTRAR <ArrowRight aria-hidden className="size-3.5" />
+            </>
+          ) : (
+            "PREPARANDO"
+          )}
+        </p>
       </div>
     </section>
   );

@@ -1,7 +1,9 @@
 import { expect, test } from "@playwright/test";
+import { enterThroughLaunch } from "./launch";
 
 test("demo user can sign in and see the assigned plan", async ({ page }) => {
   await page.goto("/signin");
+  await enterThroughLaunch(page);
   const submit = page.getByRole("button", { name: "Entrar" });
   await expect(submit).toBeEnabled();
   await submit.click();
@@ -16,6 +18,7 @@ test("a new account enters onboarding", async ({ page }, testInfo) => {
   const project = testInfo.project.name.replaceAll(/[^a-z0-9]/gi, "-");
   const email = `e2e-${project}-${Date.now()}@example.com`;
   await page.goto("/signup");
+  await enterThroughLaunch(page);
   await expect(page.getByRole("button", { name: "Criar conta" })).toBeEnabled();
   await page.getByLabel("Nome").fill("Pessoa E2E");
   await page.getByLabel("E-mail").fill(email);

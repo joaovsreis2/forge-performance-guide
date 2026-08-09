@@ -1,10 +1,12 @@
 import { expect, test } from "@playwright/test";
+import { enterThroughLaunch } from "../e2e/launch";
 
 test("production build registers its service worker and reloads offline", async ({
   context,
   page,
 }) => {
   await page.goto("/signin");
+  await enterThroughLaunch(page);
   await expect(page.getByRole("heading", { name: "Bom te ver de novo" })).toBeVisible();
 
   const workerState = await page.evaluate(async () => {
@@ -27,5 +29,6 @@ test("production build registers its service worker and reloads offline", async 
 
   await context.setOffline(true);
   await page.reload();
+  await enterThroughLaunch(page);
   await expect(page.getByRole("heading", { name: "Bom te ver de novo" })).toBeVisible();
 });
