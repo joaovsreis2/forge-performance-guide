@@ -13,6 +13,17 @@ import appCss from "../styles.css?url";
 import { LaunchGate } from "../components/forge/LaunchScreen";
 import { ForgeProvider } from "../lib/forge/store";
 
+const earlyLaunchDismissalScript = `
+document.addEventListener("pointerdown", function (event) {
+  var target = event.target instanceof Element
+    ? event.target.closest("[data-forge-launch]")
+    : null;
+  if (!target) return;
+  window.__forgeLaunchSkipped = true;
+  target.setAttribute("hidden", "");
+}, true);
+`;
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -117,6 +128,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        <script dangerouslySetInnerHTML={{ __html: earlyLaunchDismissalScript }} />
         {children}
         <Scripts />
       </body>

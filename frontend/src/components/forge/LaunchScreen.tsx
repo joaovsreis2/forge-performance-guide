@@ -4,9 +4,7 @@ import { useForge } from "@/lib/forge/store";
 
 const MINIMUM_VISIBLE_MS = 650;
 const READY_HOLD_MS = 700;
-const CLICK_FEEDBACK_MS = 80;
 const EXIT_DURATION_MS = 320;
-const CLICK_EXIT_DURATION_MS = 220;
 
 type LaunchPhase = "visible" | "leaving" | "hidden";
 
@@ -14,10 +12,14 @@ export function LaunchGate({ children }: { children: ReactNode }) {
   const { state } = useForge();
   const [minimumElapsed, setMinimumElapsed] = useState(false);
   const [phase, setPhase] = useState<LaunchPhase>("visible");
-  const [activationKey, setActivationKey] = useState(0);
   const [clientReady, setClientReady] = useState(false);
 
   useEffect(() => {
+    if ((window as Window & { __forgeLaunchSkipped?: boolean }).__forgeLaunchSkipped) {
+      setPhase("hidden");
+      return;
+    }
+
     setClientReady(true);
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const timer = window.setTimeout(
@@ -28,17 +30,15 @@ export function LaunchGate({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (!state.hydrated || (!minimumElapsed && activationKey === 0)) return;
+    if (!minimumElapsed || !state.hydrated) return;
 
-    const holdDuration = activationKey > 0 ? CLICK_FEEDBACK_MS : READY_HOLD_MS;
-    const exitDuration = activationKey > 0 ? CLICK_EXIT_DURATION_MS : EXIT_DURATION_MS;
-    const leaveTimer = window.setTimeout(() => setPhase("leaving"), holdDuration);
-    const hideTimer = window.setTimeout(() => setPhase("hidden"), holdDuration + exitDuration);
+    const leaveTimer = window.setTimeout(() => setPhase("leaving"), READY_HOLD_MS);
+    const hideTimer = window.setTimeout(() => setPhase("hidden"), READY_HOLD_MS + EXIT_DURATION_MS);
     return () => {
       window.clearTimeout(leaveTimer);
       window.clearTimeout(hideTimer);
     };
-  }, [activationKey, minimumElapsed, state.hydrated]);
+  }, [minimumElapsed, state.hydrated]);
 
   const isOpen = phase !== "hidden";
 
@@ -50,12 +50,8 @@ export function LaunchGate({ children }: { children: ReactNode }) {
       {isOpen ? (
         <LaunchScreen
           phase={phase}
-          activationKey={activationKey}
           interactive={clientReady}
-          onActivate={() => {
-            setPhase("visible");
-            setActivationKey((current) => current + 1);
-          }}
+          onActivate={() => setPhase("hidden")}
         />
       ) : null}
     </>
@@ -64,20 +60,18 @@ export function LaunchGate({ children }: { children: ReactNode }) {
 
 function LaunchScreen({
   phase,
-  activationKey,
   interactive,
   onActivate,
 }: {
   phase: Exclude<LaunchPhase, "hidden">;
-  activationKey: number;
   interactive: boolean;
   onActivate: () => void;
 }) {
   return (
     <section
       className="launch-screen fixed inset-0 z-[100] grid min-h-dvh place-items-center overflow-hidden bg-background px-6 text-foreground"
+      data-forge-launch
       data-phase={phase}
-      data-activated={activationKey > 0 || undefined}
       role="status"
       aria-label="Abrindo Forge"
     >
@@ -89,11 +83,7 @@ function LaunchScreen({
         onClick={onActivate}
       />
 
-      <div
-        key={activationKey}
-        className="launch-brand pointer-events-none flex flex-col items-center text-center"
-        data-activated={activationKey > 0 || undefined}
-      >
+      <div className="launch-brand pointer-events-none flex flex-col items-center text-center">
         <div className="launch-mark relative grid size-28 place-items-center">
           <span aria-hidden className="launch-impact absolute size-20 rounded-[16px]" />
           <span

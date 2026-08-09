@@ -21,12 +21,17 @@ test("launch screen introduces the app and releases the interface", async ({ pag
   await expect(launchScreen).toBeVisible();
   await expect(launchScreen).toContainText("FORGE");
   await expect(launchScreen).toContainText("Performance se constrói.");
-  const openButton = page.getByRole("button", { name: "Abrir Forge agora" });
-  await expect(openButton).toBeEnabled();
-  await openButton.click();
-  await expect(launchScreen.locator("[data-activated='true']")).toBeVisible();
-  await expect(launchScreen).toHaveAttribute("data-phase", "leaving", { timeout: 500 });
-  await expect(launchScreen).toBeHidden({ timeout: 700 });
+  const viewport = page.viewportSize();
+  if (!viewport) throw new Error("Playwright viewport is required for the launch interaction");
+  await page.mouse.click(viewport.width / 2, viewport.height / 2);
+  await expect(launchScreen).toBeHidden({ timeout: 300 });
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => (window as Window & { __forgeLaunchSkipped?: boolean }).__forgeLaunchSkipped,
+      ),
+    )
+    .toBe(true);
   await expect(page.getByRole("button", { name: "Entrar" })).toBeEnabled();
 });
 
