@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}{{ habit.name }} — Forge{% endblock %}
+
+{% block content %}
+  <p class="eyebrow">Habit</p>
+  <h1>{{ habit.name }}</h1>
+  <p class="summary">{{ entry_date|date:"d/m/Y" }}</p>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+      <div class="form-field">
+        {{ field.label_tag }}
+        {{ field }}
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+    <button type="submit">Registrar hábito</button>
+  </form>
+
+  <p><a href="{% url 'progress:overview' %}">Voltar para Progress</a></p>
+{% endblock %}

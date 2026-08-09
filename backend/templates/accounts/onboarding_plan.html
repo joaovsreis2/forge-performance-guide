@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Plano — Forge{% endblock %}
+
+{% block content %}
+  <p class="eyebrow">Plano</p>
+  <h1>Plano em preparação</h1>
+  <p class="summary">
+    No MVP, seu plano será importado ou atribuído por administração. Você já pode entrar no Forge
+    enquanto essa configuração não existe.
+  </p>
+
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Ir para Today</button>
+  </form>
+{% endblock %}

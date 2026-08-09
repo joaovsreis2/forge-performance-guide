@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Entrar — Forge{% endblock %}
+
+{% block content %}
+  <p class="eyebrow">Forge</p>
+  <h1>Entrar</h1>
+  <p class="summary">
+    Acesse sua sessão para continuar seu progresso.
+  </p>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    {% for field in form %}
+      <div class="form-field">
+        <label for="{{ field.id_for_label }}">
+          {{ field.label }}
+          {{ field }}
+        </label>
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+
+    <div class="form-actions">
+      <button type="submit">Entrar</button>
+      <a href="{% url 'accounts:register' %}">Criar conta</a>
+      <a href="{% url 'accounts:password_reset' %}">Recuperar senha</a>
+    </div>
+  </form>
+{% endblock %}

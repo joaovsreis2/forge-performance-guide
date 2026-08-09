@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Conta — Forge{% endblock %}
+
+{% block content %}
+  <p class="eyebrow">Conta</p>
+  <h1>Perfil e preferências</h1>
+  <p class="summary">
+    Ajuste os dados que ajudam o Forge a manter contexto sem mudar seu histórico de treino.
+  </p>
+
+  <section class="section">
+    <h2>Perfil</h2>
+    <p class="summary">Dados pessoais usados para orientar a experiência.</p>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="form" value="profile">
+      {{ profile_form.non_field_errors }}
+
+      {% for field in profile_form %}
+        <div class="form-field">
+          <label for="{{ field.id_for_label }}">
+            {{ field.label }}
+            {{ field }}
+          </label>
+          {{ field.errors }}
+        </div>
+      {% endfor %}
+
+      <div class="form-actions">
+        <button type="submit">Salvar perfil</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="section">
+    <h2>Preferências</h2>
+    <p class="summary">Configurações usadas em unidades, aparência e descanso.</p>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="form" value="preferences">
+      {{ preference_form.non_field_errors }}
+
+      {% for field in preference_form %}
+        <div class="form-field">
+          <label for="{{ field.id_for_label }}">
+            {% if field.field.widget.input_type == "checkbox" %}
+              {{ field }} {{ field.label }}
+            {% else %}
+              {{ field.label }}
+              {{ field }}
+            {% endif %}
+          </label>
+          {{ field.errors }}
+        </div>
+      {% endfor %}
+
+      <div class="form-actions">
+        <button type="submit">Salvar preferências</button>
+      </div>
+    </form>
+  </section>
+
+  <p><a href="{% url 'core:home' %}">Voltar para Today</a></p>
+{% endblock %}

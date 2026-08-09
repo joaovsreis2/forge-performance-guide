@@ -1,0 +1,18 @@
+{
+  "name": "Forge Performance",
+  "short_name": "Forge",
+  "description": "Treino estruturado, progresso mensurável e histórico confiável.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#111310",
+  "theme_color": "#111310",
+  "icons": [
+    {
+      "src": "/forge-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

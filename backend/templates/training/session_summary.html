@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Resumo — Forge{% endblock %}
+
+{% block content %}
+  <p class="eyebrow">Resumo</p>
+  <h1>{{ session.workout_name_snapshot }}</h1>
+  <p class="summary">
+    {{ session.get_status_display }}
+    {% if session.duration_seconds %}
+      · {{ session.duration_seconds }} segundos
+    {% endif %}
+  </p>
+
+  <section class="section">
+    <h2>Séries registradas</h2>
+    <ol>
+      {% for exercise in session.exercise_snapshots.all %}
+        <li class="stack-item">
+          <strong>{{ exercise.exercise_name_snapshot }}</strong>
+          <div>{{ exercise.completed_sets.all|length }} séries · {{ exercise.get_status_display }}</div>
+          {% if exercise.completed_sets.all %}
+            <ul>
+              {% for completed_set in exercise.completed_sets.all %}
+                <li>
+                  Série {{ completed_set.set_number }}
+                  {% if completed_set.status == "skipped" %}
+                    · pulada
+                  {% else %}
+                    {% if completed_set.repetitions is not None %}· {{ completed_set.repetitions }} reps{% endif %}
+                    {% if completed_set.weight_kg is not None %}· {{ completed_set.weight_kg }} kg{% endif %}
+                    {% if completed_set.duration_seconds is not None %}· {{ completed_set.duration_seconds }}s{% endif %}
+                    {% if completed_set.distance_meters is not None %}· {{ completed_set.distance_meters }}m{% endif %}
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  <p><a class="button" href="{% url 'core:home' %}">Voltar para Today</a></p>
+{% endblock %}

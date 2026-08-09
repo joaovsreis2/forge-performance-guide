@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Offline — Forge{% endblock %}
+
+{% block content %}
+  <p class="eyebrow">Offline</p>
+  <h1>Você está sem conexão</h1>
+  <p class="summary">
+    O Forge preserva o shell do aplicativo e sessões carregadas anteriormente. Algumas ações serão
+    sincronizadas quando a conexão voltar.
+  </p>
+  <p><a class="button" href="{% url 'core:home' %}">Tentar voltar para Today</a></p>
+{% endblock %}

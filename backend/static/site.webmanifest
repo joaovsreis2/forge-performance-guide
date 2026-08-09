@@ -1,0 +1,12 @@
+{
+  "name": "Forge",
+  "short_name": "Forge",
+  "description": "Plataforma de performance para treino, progresso e consistência.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0E0F11",
+  "theme_color": "#0E0F11",
+  "orientation": "portrait-primary",
+  "icons": []
+}

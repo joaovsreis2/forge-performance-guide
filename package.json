@@ -1,0 +1,19 @@
+{
+  "name": "forge",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "npm --workspace frontend run dev -- --host 127.0.0.1 --port 5175",
+    "build": "npm --workspace frontend run build",
+    "build:dev": "npm --workspace frontend run build:dev",
+    "preview": "npm --workspace frontend run preview",
+    "lint": "npm --workspace frontend run lint",
+    "format": "npm --workspace frontend run format",
+    "test:frontend": "npm --workspace frontend run test",
+    "test:e2e": "npm --workspace frontend run test:e2e",
+    "test:pwa": "npm --workspace frontend run test:pwa"
+  }
+}

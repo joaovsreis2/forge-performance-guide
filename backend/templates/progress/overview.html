@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Progress — Forge{% endblock %}
+
+{% block content %}
+  <p class="eyebrow">Progress</p>
+  <h1>Progresso</h1>
+  <p class="summary">Histórico recente, recordes rastreáveis e ações de recuperação.</p>
+
+  <section class="section action-panel">
+    <h2>Hoje</h2>
+    {% if today_recovery %}
+      <p class="summary">Recuperação registrada para hoje.</p>
+    {% else %}
+      <p class="summary">Registre recuperação sem transformar descanso em obrigação.</p>
+    {% endif %}
+    <div class="form-actions">
+      <p><a class="button" href="{% url 'progress:recovery' %}">Registrar recuperação</a></p>
+      <p><a class="button secondary-button" href="{% url 'progress:measurement' %}">Registrar medição</a></p>
+      <p><a class="button secondary-button" href="{% url 'progress:habit_create' %}">Criar hábito</a></p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Hábitos</h2>
+    {% if habits %}
+      <ol>
+        {% for habit in habits %}
+          <li class="stack-item">
+            <strong>{{ habit.name }}</strong>
+            <div>{{ habit.get_frequency_display }}</div>
+            <p><a href="{% url 'progress:habit_entry' habit.id %}">Registrar hoje</a></p>
+          </li>
+        {% endfor %}
+      </ol>
+    {% else %}
+      <p class="summary">Crie apenas hábitos que apoiem treino, recuperação ou consistência.</p>
+    {% endif %}
+  </section>
+
+  <section class="section">
+    <h2>Histórico de treino</h2>
+    {% if recent_sessions %}
+      <ol>
+        {% for session in recent_sessions %}
+          <li class="stack-item">
+            <strong>{{ session.workout_name_snapshot }}</strong>
+            <div>{{ session.get_status_display }} · {{ session.started_at|date:"d/m/Y" }}</div>
+          </li>
+        {% endfor %}
+      </ol>
+    {% else %}
+      <p class="summary">Nenhuma sessão registrada ainda.</p>
+    {% endif %}
+  </section>
+
+  <section class="section">
+    <h2>Recordes atuais</h2>
+    {% if personal_records %}
+      <ol>
+        {% for record in personal_records %}
+          <li class="stack-item">
+            <strong>{{ record.exercise.name }}</strong>
+            <div>{{ record.get_record_type_display }} · {{ record.value_numeric }}</div>
+          </li>
+        {% endfor %}
+      </ol>
+    {% else %}
+      <p class="summary">Recordes aparecem após treinos concluídos com dados válidos.</p>
+    {% endif %}
+  </section>
+
+  <section class="section">
+    <h2>Progressão</h2>
+    {% if progression %}
+      <p class="summary">
+        Nível {{ progression.current_level }} · {{ progression.total_experience }} XP
+      </p>
+      <ol>
+        {% for event in experience_events %}
+          <li class="stack-item">
+            <strong>{{ event.reason }}</strong>
+            <div>+{{ event.experience_delta }} XP · {{ event.occurred_at|date:"d/m/Y" }}</div>
+          </li>
+        {% endfor %}
+      </ol>
+    {% else %}
+      <p class="summary">XP aparece depois de ações rastreáveis, como concluir treino.</p>
+    {% endif %}
+  </section>
+
+  <section class="section">
+    <h2>Medições recentes</h2>
+    {% if measurements %}
+      <ol>
+        {% for measurement in measurements %}
+          <li class="stack-item">
+            <strong>{{ measurement.measurement_date|date:"d/m/Y" }}</strong>
+            <div>
+              {% if measurement.weight_kg %}{{ measurement.weight_kg }} kg{% endif %}
+              {% if measurement.waist_cm %} · cintura {{ measurement.waist_cm }} cm{% endif %}
+            </div>
+          </li>
+        {% endfor %}
+      </ol>
+    {% else %}
+      <p class="summary">Medições são snapshots; registre quando fizer sentido.</p>
+    {% endif %}
+  </section>
+
+  <p><a href="{% url 'core:home' %}">Voltar para Today</a></p>
+{% endblock %}

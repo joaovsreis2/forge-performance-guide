@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Plano — Forge{% endblock %}
+
+{% block content %}
+  <p class="eyebrow">Plano</p>
+  <h1>Plano atual</h1>
+
+  {% if active_plan %}
+    <p class="summary">
+      {{ active_plan.name }} está ativo. Revise a estrutura antes da execução de treino entrar no produto.
+    </p>
+    <dl>
+      <div>
+        <dt>Status</dt>
+        <dd>{{ active_plan.get_status_display }}</dd>
+      </div>
+      <div>
+        <dt>Treinos</dt>
+        <dd>{{ active_plan.workouts.all|length }}</dd>
+      </div>
+    </dl>
+    <p><a href="{% url 'training:plan_detail' active_plan.id %}">Ver detalhes do plano</a></p>
+  {% else %}
+    <p class="summary">
+      Nenhum plano ativo foi atribuído ainda. No MVP, planos são importados ou configurados pela administração.
+    </p>
+  {% endif %}
+
+  <p><a href="{% url 'core:home' %}">Voltar para Today</a></p>
+{% endblock %}

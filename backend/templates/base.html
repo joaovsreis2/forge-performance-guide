@@ -1,0 +1,39 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Forge — plataforma de performance.">
+    <meta name="theme-color" content="#0E0F11">
+    <title>{% block title %}Forge{% endblock %}</title>
+    <link rel="manifest" href="{% static 'site.webmanifest' %}">
+    <link rel="stylesheet" href="{% static 'css/foundation.css' %}">
+  </head>
+  <body>
+    {% if request.user.is_authenticated %}
+      <header class="app-header">
+        <a class="brand" href="{% url 'core:home' %}"><span class="brand-mark">F</span> FORGE</a>
+        <span class="eyebrow">Performance platform</span>
+      </header>
+    {% endif %}
+    <main class="shell">
+      {% if messages %}
+        <ul class="messages" aria-label="Mensagens">
+          {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+        </ul>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+    {% if request.user.is_authenticated and "/sessions/" not in request.path %}
+      <nav class="primary-nav" aria-label="Navegação principal">
+        <a class="{% if request.path == '/' %}active{% endif %}" href="{% url 'core:home' %}">Today</a>
+        <a class="{% if '/plan' in request.path or '/workouts' in request.path %}active{% endif %}" href="{% url 'training:plan' %}">Plan</a>
+        <a class="{% if '/progress' in request.path %}active{% endif %}" href="{% url 'progress:overview' %}">Progress</a>
+        <a class="{% if '/account' in request.path %}active{% endif %}" href="{% url 'accounts:account' %}">Account</a>
+      </nav>
+    {% endif %}
+    <script src="{% static 'js/pwa.js' %}" defer></script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

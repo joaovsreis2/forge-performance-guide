@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}{{ training_plan.name }} — Forge{% endblock %}
+
+{% block content %}
+  <p class="eyebrow">Plano</p>
+  <h1>{{ training_plan.name }}</h1>
+  <p class="summary">{{ training_plan.description|default:"Plano de treino ativo." }}</p>
+
+  {% for workout in training_plan.workouts.all %}
+    <section class="section">
+      <h2>{{ workout.name }}</h2>
+      {% if workout.estimated_duration_minutes %}
+        <p class="summary">{{ workout.estimated_duration_minutes }} minutos estimados</p>
+      {% endif %}
+      <p><a class="button" href="{% url 'training:workout_preview' workout.id %}">Preparar treino</a></p>
+      <ol>
+        {% for prescription in workout.exercise_prescriptions.all %}
+          <li class="stack-item">
+            <strong>{{ prescription.exercise.name }}</strong>
+            <div>
+              {{ prescription.target_sets }} séries
+              {% if prescription.target_repetitions_min and prescription.target_repetitions_max %}
+                · {{ prescription.target_repetitions_min }}-{{ prescription.target_repetitions_max }} reps
+              {% elif prescription.target_duration_seconds %}
+                · {{ prescription.target_duration_seconds }}s
+              {% endif %}
+              {% if prescription.rest_seconds %}
+                · descanso {{ prescription.rest_seconds }}s
+              {% endif %}
+            </div>
+            {% if prescription.technical_notes %}
+              <p class="summary">{{ prescription.technical_notes }}</p>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ol>
+    </section>
+  {% endfor %}
+
+  <p><a href="{% url 'training:plan' %}">Voltar para plano</a></p>
+{% endblock %}

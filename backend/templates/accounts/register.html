@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Criar conta — Forge{% endblock %}
+
+{% block content %}
+  <p class="eyebrow">Forge</p>
+  <h1>Crie sua conta</h1>
+  <p class="summary">
+    Comece com uma identidade segura. O plano e os dados físicos entram no próximo passo.
+  </p>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    {% for field in form %}
+      <div class="form-field">
+        <label for="{{ field.id_for_label }}">
+          {% if field.field.widget.input_type == "checkbox" %}
+            {{ field }} {{ field.label }}
+          {% else %}
+            {{ field.label }}
+            {{ field }}
+          {% endif %}
+        </label>
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+
+    <div class="form-actions">
+      <button type="submit">Criar conta</button>
+      <a href="{% url 'accounts:signin' %}">Já tenho conta</a>
+    </div>
+  </form>
+{% endblock %}

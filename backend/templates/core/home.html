@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Hoje — Forge{% endblock %}
+
+{% block content %}
+  <p class="eyebrow">Forge · {% now "j \d\e F" %}</p>
+  <h1>Hoje</h1>
+  {% if not active_plan %}<span class="sr-only">Aguardando configuração · {{ environment }}</span>{% endif %}
+
+  {% if open_session %}
+    <section class="action-panel section">
+      <p class="eyebrow">Treino em andamento</p>
+      <h2>{{ open_session.workout_name_snapshot }}</h2>
+      <p class="summary">Você pode continuar de onde parou.</p>
+      <p><a class="button" href="{% url 'training:session_active' open_session.id %}">Retomar treino <span aria-hidden="true">→</span></a></p>
+    </section>
+  {% elif active_plan and today_workout %}
+    <section class="section">
+      <p class="eyebrow">Treino agendado</p>
+      <h2 class="today-workout-title">{{ today_workout.name }}</h2>
+      <p class="summary">Seu treino está pronto quando você estiver.</p>
+      <dl class="metric-line">
+        <div><dd>{{ today_workout.exercise_prescriptions.all|length }} <span>exercícios</span></dd></div>
+        <div><dd>{{ today_total_sets }} <span>séries</span></dd></div>
+        <div><dd>{% if today_workout.estimated_duration_minutes %}~{{ today_workout.estimated_duration_minutes }}{% else %}—{% endif %} <span>min</span></dd></div>
+      </dl>
+      <p><a class="button" href="{% url 'training:workout_preview' today_workout.id %}">Ver treino de hoje <span class="sr-only">Ver preparação</span><span aria-hidden="true">→</span></a></p>
+      <p><a href="{% url 'progress:recovery' %}">Registrar recuperação</a></p>
+    </section>
+  {% elif active_plan %}
+    <section class="section">
+      <p class="eyebrow">Descanso agendado</p>
+      <h2 class="today-workout-title">Dia de descanso</h2>
+      <p class="summary">Plano ativo: {{ active_plan.name }}</p>
+      <p class="summary">Recuperação faz parte do progresso. Use o dia para cuidar do que sustenta seu próximo treino.</p>
+      <div class="form-actions"><a class="button" href="{% url 'progress:recovery' %}">Registrar recuperação</a><a class="button secondary-button" href="{% url 'training:plan' %}">Ver plano</a></div>
+    </section>
+  {% else %}
+    <section class="action-panel section">
+      <p class="eyebrow">Plano ativo</p>
+      <h2>Nenhum plano de treino ativo</h2>
+      <p class="summary">Configure sua estrutura de treino para começar a acompanhar evolução.</p>
+      <p><a class="button" href="{% url 'training:plan' %}">Ver plano</a></p>
+    </section>
+  {% endif %}
+
+  <section class="section recent-section">
+    <div class="section-heading"><h2>Progresso recente</h2><span>Duas sessões mais recentes</span></div>
+    {% if active_plan %}
+      {% for workout in active_plan.workouts.all|slice:":2" %}
+        <article class="row-item"><div><strong>{{ workout.name }}</strong><span>Plano ativo</span></div><span class="row-arrow">→</span></article>
+      {% empty %}<p class="summary">Suas sessões concluídas aparecem aqui.</p>{% endfor %}
+    {% else %}<p class="summary">Suas sessões concluídas aparecem aqui.</p>{% endif %}
+  </section>
+{% endblock %}

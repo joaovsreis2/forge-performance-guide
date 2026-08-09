@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ session.workout_name_snapshot }} — Forge{% endblock %}
+
+{% block content %}
+<div class="active-workout">
+  <p class="eyebrow">Treino ativo</p>
+  <h1>{{ session.workout_name_snapshot }}</h1>
+
+  {% if latest_set and rest_seconds %}
+    <section
+      class="section rest-timer"
+      data-rest-timer
+      data-started-at="{{ latest_set.completed_at|date:'c' }}"
+      data-duration="{{ rest_seconds }}"
+      aria-live="polite"
+    >
+      <p class="eyebrow">Descanso</p>
+      <h2 data-rest-timer-value>{{ rest_seconds }}s</h2>
+      <p class="summary" data-rest-timer-label>Recupere antes da próxima série.</p>
+    </section>
+  {% endif %}
+
+  {% if session.status == "paused" %}
+  <section class="section action-panel">
+      <h2>Pausado</h2>
+      <p class="summary">Seu progresso está preservado.</p>
+      <form method="post" action="{% url 'training:session_resume' session.id %}">
+        {% csrf_token %}
+        <button type="submit">Retomar treino</button>
+      </form>
+    </section>
+  {% elif active_exercise %}
+    <section class="section action-panel">
+      <p class="eyebrow">Exercício atual</p>
+      <h2>{{ active_exercise.exercise_name_snapshot }}</h2>
+      <p class="summary">
+        Série {{ next_set_number }} de {{ active_exercise.target_sets_snapshot }}
+        {% if active_exercise.target_repetitions_min_snapshot and active_exercise.target_repetitions_max_snapshot %}
+          · alvo {{ active_exercise.target_repetitions_min_snapshot }}-{{ active_exercise.target_repetitions_max_snapshot }} reps
+        {% elif active_exercise.target_duration_seconds_snapshot %}
+          · alvo {{ active_exercise.target_duration_seconds_snapshot }}s
+        {% endif %}
+      </p>
+
+      <form
+        method="post"
+        action="{% url 'training:session_active' session.id %}"
+        data-offline-set-form
+        data-session-id="{{ session.id }}"
+      >
+        {% csrf_token %}
+        <input type="hidden" name="set_number" value="{{ next_set_number }}" data-set-number>
+        <input type="hidden" name="client_generated_id" value="" data-client-generated-id>
+        {{ form.non_field_errors }}
+        {% for field in form %}
+          <div class="form-field">
+            {{ field.label_tag }}
+            {{ field }}
+            {{ field.errors }}
+          </div>
+        {% endfor %}
+        <button type="submit">Registrar série</button>
+      </form>
+      <p class="summary" data-sync-status hidden>Registro salvo no dispositivo. Sincroniza ao voltar.</p>
+      <div class="form-actions">
+        <form method="post" action="{% url 'training:session_skip_set' session.id %}">
+          {% csrf_token %}
+          <button type="submit" class="secondary-button">Pular série</button>
+        </form>
+        <form method="post" action="{% url 'training:session_skip_exercise' session.id %}">
+          {% csrf_token %}
+          <button type="submit" class="secondary-button">Pular exercício</button>
+        </form>
+      </div>
+
+      {% if active_exercise.technical_notes_snapshot %}
+        <details>
+          <summary>Notas técnicas</summary>
+          <p class="summary">{{ active_exercise.technical_notes_snapshot }}</p>
+        </details>
+      {% endif %}
+    </section>
+  {% else %}
+    <section class="section action-panel">
+      <h2>Estrutura concluída</h2>
+      <p class="summary">Finalize para salvar o treino como histórico.</p>
+    </section>
+  {% endif %}
+
+  <section class="section">
+    <h2>Progresso</h2>
+    <ol class="progress-list">
+      {% for exercise in session.exercise_snapshots.all %}
+        <li class="stack-item">
+          <strong>{{ exercise.exercise_name_snapshot }}</strong>
+          <div>
+            {{ exercise.get_status_display }} · {{ exercise.completed_sets.all|length }}/{{ exercise.target_sets_snapshot }} séries
+          </div>
+        </li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  <div class="form-actions">
+    {% if session.status == "active" %}
+      <form method="post" action="{% url 'training:session_pause' session.id %}">
+        {% csrf_token %}
+        <button type="submit" class="secondary-button">Pausar</button>
+      </form>
+    {% endif %}
+    <form method="post" action="{% url 'training:session_complete' session.id %}">
+      {% csrf_token %}
+      <button type="submit">Finalizar treino</button>
+    </form>
+    <form method="post" action="{% url 'training:session_cancel' session.id %}">
+      {% csrf_token %}
+      <button type="submit" class="danger-button">Cancelar treino</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{% static 'js/offline_workout.js' %}" defer></script>
+  <script src="{% static 'js/rest_timer.js' %}" defer></script>
+{% endblock %}

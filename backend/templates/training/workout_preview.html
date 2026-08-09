@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}{{ workout.name }} — Forge{% endblock %}
+
+{% block content %}
+  <p class="eyebrow">Prévia da sessão</p>
+  <h1>{{ workout.name }}</h1>
+  <p class="summary">Revise a sessão e comece quando estiver pronto.</p>
+  <div class="workout-meta">
+    <span>{{ workout.exercise_prescriptions.all|length }} <span>exercícios</span></span>
+    <span>{{ workout.exercise_prescriptions.all|length }} <span>séries</span></span>
+    <span>{% if workout.estimated_duration_minutes %}~{{ workout.estimated_duration_minutes }}{% else %}—{% endif %} <span>min</span></span>
+  </div>
+
+  {% if open_session %}
+    <section class="section action-panel">
+      <h2>Treino em andamento</h2>
+      <p class="summary">Você pode continuar de onde parou.</p>
+      <p><a class="button" href="{% url 'training:session_active' open_session.id %}">Retomar treino</a></p>
+    </section>
+  {% else %}
+    <form class="workout-primary-action" method="post" action="{% url 'training:workout_start' workout.id %}">
+      {% csrf_token %}
+      <button type="submit">Iniciar treino <span aria-hidden="true">→</span></button>
+    </form>
+  {% endif %}
+
+  <section class="section">
+    <h2>Estrutura</h2>
+    <ol class="exercise-list">
+      {% for prescription in workout.exercise_prescriptions.all %}
+        <li class="exercise-card">
+          <span class="exercise-number">{{ forloop.counter|stringformat:"02d" }}</span>
+          <div>
+            <strong>{{ prescription.exercise.name }}</strong>
+          <div class="exercise-detail">
+            {{ prescription.target_sets }} séries
+            {% if prescription.target_repetitions_min and prescription.target_repetitions_max %}
+              · {{ prescription.target_repetitions_min }}-{{ prescription.target_repetitions_max }} reps
+            {% elif prescription.target_duration_seconds %}
+              · {{ prescription.target_duration_seconds }}s
+            {% endif %}
+            {% if prescription.rest_seconds %}
+              · descanso {{ prescription.rest_seconds }}s
+            {% endif %}
+          </div>
+          {% if prescription.technical_notes %}
+            <p class="exercise-note">{{ prescription.technical_notes }}</p>
+          {% endif %}
+          </div>
+        </li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  <p><a href="{% url 'training:plan_detail' workout.training_plan.id %}">Voltar para o plano</a></p>
+{% endblock %}

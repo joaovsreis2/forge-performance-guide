@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Novo hábito — Forge{% endblock %}
+
+{% block content %}
+  <p class="eyebrow">Habit</p>
+  <h1>Novo hábito</h1>
+  <p class="summary">Use hábitos para comportamentos que sustentam evolução real.</p>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+      <div class="form-field">
+        {{ field.label_tag }}
+        {{ field }}
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+    <button type="submit">Criar hábito</button>
+  </form>
+
+  <p><a href="{% url 'progress:overview' %}">Voltar para Progress</a></p>
+{% endblock %}

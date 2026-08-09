@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Recuperação — Forge{% endblock %}
+
+{% block content %}
+  <p class="eyebrow">Recovery</p>
+  <h1>Recuperação</h1>
+  <p class="summary">{{ recovery_date|date:"d/m/Y" }}</p>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+      <div class="form-field">
+        {{ field.label_tag }}
+        {{ field }}
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+    <button type="submit">Salvar recuperação</button>
+  </form>
+
+  <p><a href="{% url 'progress:overview' %}">Voltar para Progress</a></p>
+{% endblock %}
