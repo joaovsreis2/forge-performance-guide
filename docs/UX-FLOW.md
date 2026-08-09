@@ -140,6 +140,7 @@ The launch surface:
 
 - disappears as soon as hydration is complete;
 - never displays fake progress;
+- provides brief brand feedback when the central mark is tapped;
 - does not interrupt route resolution;
 - respects reduced-motion preferences;
 - keeps the underlying interface unavailable until it is ready.

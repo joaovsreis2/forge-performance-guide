@@ -21,7 +21,14 @@ test("launch screen introduces the app and releases the interface", async ({ pag
   await expect(launchScreen).toBeVisible();
   await expect(launchScreen).toContainText("FORGE");
   await expect(launchScreen).toContainText("Performance se constrói.");
-  await page.screenshot({ path: testInfo.outputPath("launch.png"), fullPage: true });
+  const brandButton = page.getByRole("button", {
+    name: "Reproduzir animação da marca Forge",
+  });
+  await expect(brandButton).toBeEnabled();
+  await brandButton.click();
+  await expect(launchScreen.locator("[data-activated='true']")).toBeVisible();
+  await page.waitForTimeout(160);
+  await page.screenshot({ path: testInfo.outputPath("launch-click.png"), fullPage: true });
   await expect(launchScreen).toBeHidden();
   await expect(page.getByRole("button", { name: "Entrar" })).toBeEnabled();
 });
