@@ -154,6 +154,10 @@
   animation: forge-launch-out 320ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
+.launch-screen[data-phase="leaving"][data-activated="true"] {
+  animation-duration: 220ms;
+}
+
 .launch-mark {
   animation: forge-launch-mark-in 360ms cubic-bezier(0.22, 1, 0.36, 1) 80ms both;
 }
@@ -171,25 +175,21 @@
   touch-action: manipulation;
 }
 
-.launch-trigger:active .launch-icon {
-  transform: scale(0.94);
-}
-
 .launch-icon {
   transition: transform 120ms ease-out;
 }
 
 .launch-brand[data-activated="true"] .launch-icon {
-  animation: forge-launch-icon-activate 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: forge-launch-icon-activate 280ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .launch-brand[data-activated="true"] .launch-corner {
-  animation: forge-launch-corner-activate 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: forge-launch-corner-activate 280ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .launch-brand[data-activated="true"] .launch-impact {
   border: 2px solid var(--color-primary);
-  animation: forge-launch-impact 420ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: forge-launch-impact 280ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @keyframes forge-launch-icon-activate {

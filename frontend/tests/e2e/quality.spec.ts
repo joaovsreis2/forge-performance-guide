@@ -14,22 +14,19 @@ async function expectAccessiblePage(page: Page) {
   expect(hasHorizontalOverflow).toBeFalsy();
 }
 
-test("launch screen introduces the app and releases the interface", async ({ page }, testInfo) => {
+test("launch screen introduces the app and releases the interface", async ({ page }) => {
   await page.goto("/signin");
 
   const launchScreen = page.getByRole("status", { name: "Abrindo Forge" });
   await expect(launchScreen).toBeVisible();
   await expect(launchScreen).toContainText("FORGE");
   await expect(launchScreen).toContainText("Performance se constrói.");
-  const brandButton = page.getByRole("button", {
-    name: "Reproduzir animação da marca Forge",
-  });
-  await expect(brandButton).toBeEnabled();
-  await brandButton.click();
+  const openButton = page.getByRole("button", { name: "Abrir Forge agora" });
+  await expect(openButton).toBeEnabled();
+  await openButton.click();
   await expect(launchScreen.locator("[data-activated='true']")).toBeVisible();
-  await page.waitForTimeout(160);
-  await page.screenshot({ path: testInfo.outputPath("launch-click.png"), fullPage: true });
-  await expect(launchScreen).toBeHidden();
+  await expect(launchScreen).toHaveAttribute("data-phase", "leaving", { timeout: 500 });
+  await expect(launchScreen).toBeHidden({ timeout: 700 });
   await expect(page.getByRole("button", { name: "Entrar" })).toBeEnabled();
 });
 
