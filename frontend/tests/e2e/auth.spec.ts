@@ -5,6 +5,8 @@ test("demo user can sign in and see the assigned plan", async ({ page }) => {
   await page.goto("/signin");
   await enterThroughLaunch(page);
   const submit = page.getByRole("button", { name: "Entrar" });
+  await page.getByLabel("E-mail").fill("teste@forge.local");
+  await page.getByLabel("Senha", { exact: true }).fill("Teste-Forge-2026");
   await expect(submit).toBeEnabled();
   await submit.click();
 

@@ -77,7 +77,9 @@ def _cors(response: JsonResponse) -> JsonResponse:
 
 
 def _json(data, *, status=200):
-    return _cors(JsonResponse(data, status=status, safe=False))
+    response = _cors(JsonResponse(data, status=status, safe=False))
+    response["Cache-Control"] = "no-store"
+    return response
 
 
 def _options(request: HttpRequest):

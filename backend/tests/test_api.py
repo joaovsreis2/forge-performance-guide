@@ -67,6 +67,7 @@ def test_api_requires_authentication(client):
 
     assert response.status_code == 401
     assert response.json()["detail"] == "Autenticação necessária."
+    assert response["Cache-Control"] == "no-store"
 
 
 @pytest.mark.django_db

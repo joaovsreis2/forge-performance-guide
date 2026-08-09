@@ -2,9 +2,14 @@ import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
+import { proxyApiRequest, type ForgeRuntimeEnv } from "./lib/api-proxy";
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
+};
+
+type RuntimeRequest = Request & {
+  runtime?: { cloudflare?: { env?: ForgeRuntimeEnv } };
 };
 
 let serverEntryPromise: Promise<ServerEntry> | undefined;
@@ -47,6 +52,12 @@ function isH3SwallowedErrorBody(body: string): boolean {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
+      const runtimeEnv =
+        (request as RuntimeRequest).runtime?.cloudflare?.env ??
+        (env && typeof env === "object" ? (env as ForgeRuntimeEnv) : {});
+      const apiResponse = await proxyApiRequest(request, runtimeEnv);
+      if (apiResponse) return apiResponse;
+
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);

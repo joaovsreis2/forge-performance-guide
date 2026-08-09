@@ -44,6 +44,8 @@ test("sign-in is accessible and fits the viewport", async ({ page }) => {
 test("Today is accessible and fits the viewport", async ({ page }, testInfo) => {
   await page.goto("/signin");
   await enterThroughLaunch(page);
+  await page.getByLabel("E-mail").fill("teste@forge.local");
+  await page.getByLabel("Senha", { exact: true }).fill("Teste-Forge-2026");
   const submit = page.getByRole("button", { name: "Entrar", exact: true });
   await expect(submit).toBeEnabled();
   await submit.click();

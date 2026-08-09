@@ -435,6 +435,8 @@ First Exercise
 
 - starting a workout creates one active session;
 - duplicate active sessions are blocked;
+- the active workout opens only after the server confirms the session identifier;
+- a start failure keeps the user in the preview and does not create an unconfirmed local session;
 - the first exercise must be immediately accessible;
 - optional details must not delay starting.
 

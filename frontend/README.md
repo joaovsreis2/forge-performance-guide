@@ -22,7 +22,8 @@ npm run dev -- --host 127.0.0.1 --port 5175
 ```
 
 A URL padrão é `http://127.0.0.1:5175/`. A API deve estar disponível em
-`http://127.0.0.1:8000/api/`; use `VITE_API_URL` para apontar para outro endereço.
+`http://127.0.0.1:8000/api/`. Em produção, use `VITE_API_URL=/api` e configure
+`FORGE_API_ORIGIN=https://<backend-host>` no Worker para manter a autenticação no mesmo domínio.
 
 ## Verificação
 

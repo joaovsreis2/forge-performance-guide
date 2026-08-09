@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useState } from "react";
 import { AppShell } from "@/components/forge/AppShell";
 import { GateFallback, useAppGate } from "@/components/forge/Gate";
 import { Action, ActionLink, Panel, SystemState } from "@/components/forge/ui";
@@ -25,6 +26,8 @@ function WorkoutPreview() {
   const ready = useAppGate();
   const { startWorkout, state } = useForge();
   const navigate = useNavigate();
+  const [starting, setStarting] = useState(false);
+  const [startError, setStartError] = useState("");
   const remoteWorkout = state.remotePlan?.days.find(
     (day) => day.id === state.remotePlan?.todayWorkoutId,
   );
@@ -119,18 +122,47 @@ function WorkoutPreview() {
             </div>
           ) : null}
 
+          {startError ? (
+            <div className="mt-6">
+              <SystemState
+                kind="error"
+                title="Não foi possível iniciar"
+                body={startError}
+                preserved="Nenhuma sessão foi criada ou alterada. Tente novamente quando a conexão estiver estável."
+              />
+            </div>
+          ) : null}
+
           <div className="sticky bottom-24 mt-8 md:bottom-6">
             <Action
               size="lg"
               className="w-full shadow-raised"
-              disabled={state.offline && !state.session}
-              onClick={() => {
+              disabled={starting || (state.offline && !state.session)}
+              onClick={async () => {
                 if (state.offline && !state.session) return;
-                if (!state.session) startWorkout();
-                navigate({ to: "/workout/active" });
+                if (state.session) {
+                  await navigate({ to: "/workout/active" });
+                  return;
+                }
+
+                setStarting(true);
+                setStartError("");
+                try {
+                  const started = await startWorkout();
+                  if (started) await navigate({ to: "/workout/active" });
+                  else setStartError("O treino de hoje não está disponível para iniciar.");
+                } catch (error) {
+                  setStartError(
+                    error instanceof Error
+                      ? error.message
+                      : "O servidor não confirmou o início do treino.",
+                  );
+                } finally {
+                  setStarting(false);
+                }
               }}
             >
-              {state.session ? "Retomar treino" : "Iniciar treino"}{" "}
+              {starting ? "Iniciando..." : state.session ? "Retomar treino" : "Iniciar treino"}{" "}
               <ArrowRight aria-hidden className="size-4" />
             </Action>
           </div>

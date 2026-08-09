@@ -77,6 +77,7 @@ def test_production_settings_are_secure(monkeypatch) -> None:
     assert production.SESSION_COOKIE_SECURE is True
     assert production.CSRF_COOKIE_SECURE is True
     assert production.SECURE_SSL_REDIRECT is True
-    assert production.SESSION_COOKIE_SAMESITE == "None"
+    assert production.SESSION_COOKIE_SAMESITE == "Lax"
+    assert production.CSRF_COOKIE_SAMESITE == "Lax"
     assert production.EMAIL_BACKEND == "django.core.mail.backends.smtp.EmailBackend"
     assert "*" not in production.ALLOWED_HOSTS

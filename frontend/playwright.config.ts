@@ -1,5 +1,10 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const backendCommand =
+  process.platform === "win32"
+    ? "..\\backend\\.venv\\Scripts\\python.exe ..\\backend\\manage.py runserver 127.0.0.1:8000 --noreload"
+    : "python ../backend/manage.py runserver 127.0.0.1:8000 --noreload";
+
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: false,
@@ -23,8 +28,7 @@ export default defineConfig({
       timeout: 120_000,
     },
     {
-      command:
-        "..\\backend\\.venv\\Scripts\\python.exe ..\\backend\\manage.py runserver 127.0.0.1:8000 --noreload",
+      command: backendCommand,
       url: "http://127.0.0.1:8000/health/",
       reuseExistingServer: true,
       timeout: 120_000,

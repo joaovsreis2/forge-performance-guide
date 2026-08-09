@@ -11,6 +11,7 @@
     "build:dev": "npm --workspace frontend run build:dev",
     "preview": "npm --workspace frontend run preview",
     "lint": "npm --workspace frontend run lint",
+    "typecheck": "npm --workspace frontend run typecheck",
     "format": "npm --workspace frontend run format",
     "test:frontend": "npm --workspace frontend run test",
     "test:e2e": "npm --workspace frontend run test:e2e",

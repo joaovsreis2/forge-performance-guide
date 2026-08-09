@@ -269,7 +269,7 @@ type Ctx = {
   signIn: (email?: string, password?: string) => Promise<void>;
   finishOnboarding: () => void;
   signOut: () => void;
-  startWorkout: () => void;
+  startWorkout: () => Promise<boolean>;
   completeSet: (weight: number, reps: number) => void;
   skipSet: () => void;
   skipExercise: () => void;
@@ -562,55 +562,24 @@ export function ForgeProvider({ children }: { children: ReactNode }) {
         await clearOfflineData().catch(() => undefined);
         set({ phase: "signin", session: null });
       },
-      startWorkout: () => {
+      startWorkout: async () => {
+        if (state.session) return true;
         if (state.offline) {
           set({ syncStatus: "failed" });
-          return;
+          return false;
         }
-        const startedAt = Date.now();
         const planned = state.remotePlan?.days.find(
           (day) => day.id === state.remotePlan?.todayWorkoutId,
         );
-        if (!planned || planned.exercises.length === 0) return;
-        const exercises: PlanExercise[] = planned.exercises.map((exercise) => ({
-          ...exercise,
-          repLow: exercise.repLow ?? 0,
-          repHigh: exercise.repHigh ?? 0,
-        }));
+        if (!planned || planned.exercises.length === 0) return false;
+
+        const remoteSession = await forgeApi.startWorkout(planned.id);
         set({
           todayVariant: "scheduled",
-          session: {
-            workoutName: planned.name,
-            exercises,
-            startedAt,
-            status: "active",
-            exerciseIndex: 0,
-            setIndex: 0,
-            logs: [],
-            skippedExercises: [],
-            rest: null,
-            activeMs: 0,
-            resumedAt: startedAt,
-            finishedAt: null,
-            outcome: null,
-            records: [],
-          },
+          session: sessionFromRemote(remoteSession),
+          syncStatus: "synced",
         });
-        void forgeApi
-          .plan()
-          .then((remotePlan) => {
-            if (!remotePlan.todayWorkoutId) return;
-            return forgeApi.startWorkout(remotePlan.todayWorkoutId);
-          })
-          .then((remoteSession) => {
-            if (!remoteSession) return;
-            setState((prev) =>
-              prev.session
-                ? { ...prev, session: { ...prev.session, ...sessionFromRemote(remoteSession) } }
-                : prev,
-            );
-          })
-          .catch(() => set({ syncStatus: "pending" }));
+        return true;
       },
       completeSet: (weight, reps) => {
         const now = Date.now();

@@ -24,12 +24,15 @@ currently deployed application during rollout.
 Connect `frontend/` to Cloudflare Workers and use:
 
 ```text
-Build command: npm install && npm run build
+Build command: npm ci && npm run build
 Deploy command: npx nitro deploy --prebuilt
 ```
 
-Set `VITE_API_URL` to `https://<backend-host>/api` before building. The generated Cloudflare worker
-is in `frontend/.output/`. Verify `/site.webmanifest` and `/service-worker.js` after deployment.
+Set the build variable `VITE_API_URL=/api`. Set the Cloudflare runtime variable
+`FORGE_API_ORIGIN=https://<backend-host>` without the `/api` suffix. The Worker proxies `/api/*`
+to Django so session cookies remain first-party on the default provider hostnames. The generated
+Cloudflare worker is in `frontend/.output/`. Verify `/site.webmanifest`, `/service-worker.js` and
+an authenticated `/api/me/` request after deployment.
 
 ## Release Check
 
@@ -37,6 +40,8 @@ Run from the repository root:
 
 ```powershell
 npm run test:frontend
+npm run typecheck
+npm run lint
 npm run test:e2e
 npm run build
 npm run test:pwa
@@ -46,6 +51,10 @@ backend/.venv/Scripts/python -m pytest backend/tests
 
 Then validate account creation, password recovery delivery, one complete workout, offline reload,
 queue synchronization and account deletion against the production environment.
+
+Before public access, also confirm that provider environment variables contain no local URLs, the
+Supabase backup is current, Render reports `/health/` as healthy, SMTP delivery reaches a real
+inbox, and both GitHub quality workflows pass on the deployed commit.
 
 ## Rollback
 

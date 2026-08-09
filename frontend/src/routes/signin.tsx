@@ -19,8 +19,8 @@ export const Route = createFileRoute("/signin")({
 function SignIn() {
   const { state, signIn } = useForge();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("teste@forge.local");
-  const [password, setPassword] = useState("teste123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
