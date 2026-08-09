@@ -93,6 +93,7 @@
     "wrangler": "^4.120.0"
   },
   "optionalDependencies": {
-    "@rolldown/binding-linux-x64-gnu": "1.2.2"
+    "@rolldown/binding-linux-x64-gnu": "1.2.2",
+    "lightningcss-linux-x64-gnu": "1.32.0"
   }
 }
