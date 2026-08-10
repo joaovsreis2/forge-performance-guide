@@ -9,6 +9,7 @@ from django.contrib.auth.views import (
     PasswordResetDoneView,
     PasswordResetView,
 )
+from django.core.exceptions import ValidationError
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
@@ -177,7 +178,11 @@ def onboarding_physical(request: HttpRequest) -> HttpResponse:
 @require_http_methods(["GET", "POST"])
 def onboarding_plan(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
-        acknowledge_plan_setup(profile=request.user.profile)
+        try:
+            acknowledge_plan_setup(profile=request.user.profile)
+        except ValidationError as error:
+            messages.error(request, "; ".join(error.messages))
+            return redirect("accounts:onboarding_plan")
         return redirect("core:home")
 
     return render(request, "accounts/onboarding_plan.html")

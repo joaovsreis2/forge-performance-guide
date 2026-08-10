@@ -1,8 +1,10 @@
+from zipfile import ZIP_DEFLATED, ZipFile
+
 import pytest
 from django.core.management import call_command
 from django.core.management.base import CommandError
 
-from forge.training.models import Exercise, TrainingPlan
+from forge.training.models import Exercise, PlanWorkout, TrainingPlan, WorkoutExercise
 from forge.training.services import import_training_plan_from_csv
 
 VALID_CSV_HEADER = (
@@ -114,3 +116,120 @@ def test_import_training_plan_command_requires_valid_csv(django_user_model, tmp_
             email=user.email,
             plan_name="Base importada",
         )
+
+
+@pytest.mark.django_db
+def test_training_plan_import_accepts_structured_xlsx(django_user_model, tmp_path) -> None:
+    user = django_user_model.objects.create_user("pessoa@example.com", "Senha-Forte-Forge-2026")
+    xlsx_path = tmp_path / "paulo.xlsx"
+    _write_minimal_training_xlsx(xlsx_path)
+
+    result = import_training_plan_from_csv(
+        csv_path=xlsx_path,
+        user_email=user.email,
+        plan_name="Plano Paulo",
+        dry_run=False,
+        activate=True,
+    )
+
+    plan = TrainingPlan.objects.get(user=user, name="Plano Paulo")
+    workout = plan.workouts.get(sequence=1)
+    duration_exercise = WorkoutExercise.objects.get(
+        plan_workout__training_plan=plan,
+        exercise__name="Prancha isométrica",
+    )
+
+    assert result.is_valid
+    assert result.workouts_seen == 1
+    assert result.prescriptions_seen == 2
+    assert plan.status == TrainingPlan.Status.ACTIVE
+    assert workout.weekday == PlanWorkout.Weekday.MONDAY
+    assert workout.exercise_prescriptions.count() == 2
+    assert duration_exercise.exercise.primary_metric == Exercise.PrimaryMetric.DURATION
+    assert duration_exercise.target_duration_seconds == 60
+    assert "Grupo muscular: Abdômen." in duration_exercise.technical_notes
+
+
+def _write_minimal_training_xlsx(path) -> None:
+    sheet_xml = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <sheetData>
+    <row r="1">
+      <c r="A1" t="inlineStr"><is><t>SEGUNDA — SUPERIOR A — Ênfase Peito</t></is></c>
+    </row>
+    <row r="2">
+      <c r="A2" t="inlineStr"><is><t>Nº</t></is></c>
+      <c r="B2" t="inlineStr"><is><t>Grupo Muscular</t></is></c>
+      <c r="C2" t="inlineStr"><is><t>Exercício</t></is></c>
+      <c r="D2" t="inlineStr"><is><t>Séries</t></is></c>
+      <c r="E2" t="inlineStr"><is><t>Repetições</t></is></c>
+      <c r="F2" t="inlineStr"><is><t>Descanso</t></is></c>
+      <c r="G2" t="inlineStr"><is><t>Carga (kg)</t></is></c>
+      <c r="H2" t="inlineStr"><is><t>Observações Técnicas</t></is></c>
+    </row>
+    <row r="3">
+      <c r="A3" t="inlineStr"><is><t>1</t></is></c>
+      <c r="B3" t="inlineStr"><is><t>Peito</t></is></c>
+      <c r="C3" t="inlineStr"><is><t>Supino máquina</t></is></c>
+      <c r="D3" t="inlineStr"><is><t>3</t></is></c>
+      <c r="E3" t="inlineStr"><is><t>10-12</t></is></c>
+      <c r="F3" t="inlineStr"><is><t>90s</t></is></c>
+      <c r="H3" t="inlineStr"><is><t>Controle a descida.</t></is></c>
+    </row>
+    <row r="4">
+      <c r="A4" t="inlineStr"><is><t>2</t></is></c>
+      <c r="B4" t="inlineStr"><is><t>Abdômen</t></is></c>
+      <c r="C4" t="inlineStr"><is><t>Prancha isométrica</t></is></c>
+      <c r="D4" t="inlineStr"><is><t>3</t></is></c>
+      <c r="E4" t="inlineStr"><is><t>40-60s</t></is></c>
+      <c r="F4" t="inlineStr"><is><t>45s</t></is></c>
+      <c r="H4" t="inlineStr"><is><t>Manter postura alinhada.</t></is></c>
+    </row>
+  </sheetData>
+</worksheet>
+"""
+    with ZipFile(path, "w", ZIP_DEFLATED) as xlsx:
+        xlsx.writestr(
+            "[Content_Types].xml",
+            """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/xl/workbook.xml"
+    ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+  <Override PartName="/xl/worksheets/sheet1.xml"
+    ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+</Types>
+""",
+        )
+        xlsx.writestr(
+            "_rels/.rels",
+            """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1"
+    Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument"
+    Target="xl/workbook.xml"/>
+</Relationships>
+""",
+        )
+        xlsx.writestr(
+            "xl/workbook.xml",
+            """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <sheets>
+    <sheet name="Segunda" sheetId="1" r:id="rId1"/>
+  </sheets>
+</workbook>
+""",
+        )
+        xlsx.writestr(
+            "xl/_rels/workbook.xml.rels",
+            """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1"
+    Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet"
+    Target="worksheets/sheet1.xml"/>
+</Relationships>
+""",
+        )
+        xlsx.writestr("xl/worksheets/sheet1.xml", sheet_xml)

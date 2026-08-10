@@ -83,19 +83,24 @@ Para criar um plano demo para a conta de teste:
 backend/.venv/Scripts/python backend/manage.py seed_demo_plan --email teste@forge.local
 ```
 
-Para importar um plano administrativo a partir de CSV, valide primeiro:
+O plano base do app fica versionado em `forge/training/data/paulo-base.xlsx`. Durante o
+onboarding, quando um usuário real confirma a etapa de plano, o backend atribui esse plano como
+plano ativo da conta.
+
+Para importar um plano administrativo manualmente a partir de CSV ou XLSX para uma conta já
+existente, valide primeiro:
 
 ```powershell
-backend/.venv/Scripts/python backend/manage.py import_training_plan plan.csv --email teste@forge.local --plan-name "Base de Força"
+backend/.venv/Scripts/python backend/manage.py import_training_plan plan.xlsx --email usuario@example.com --plan-name "Base de Força"
 ```
 
 Depois persista e, se necessário, ative o plano importado:
 
 ```powershell
-backend/.venv/Scripts/python backend/manage.py import_training_plan plan.csv --email teste@forge.local --plan-name "Base de Força" --commit --activate
+backend/.venv/Scripts/python backend/manage.py import_training_plan plan.xlsx --email usuario@example.com --plan-name "Base de Força" --commit --activate
 ```
 
-O CSV inicial exige as colunas:
+O CSV exige as colunas:
 
 ```text
 workout_sequence, workout_name, exercise_sequence, exercise_name, primary_metric, target_sets

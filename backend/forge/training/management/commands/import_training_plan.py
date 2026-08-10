@@ -6,7 +6,7 @@ from forge.training.services import import_training_plan_from_csv
 
 
 class Command(BaseCommand):
-    help = "Importa um plano de treino a partir de um CSV administrativo validado."
+    help = "Importa um plano de treino a partir de um CSV validado ou XLSX estruturado."
 
     def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument("csv_path")

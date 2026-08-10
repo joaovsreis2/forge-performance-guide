@@ -82,6 +82,14 @@ ALLOWED_HOSTS: list[str] = []
 ENVIRONMENT = os.getenv("FORGE_ENVIRONMENT", "base")
 FRONTEND_ORIGIN = os.getenv("FORGE_FRONTEND_ORIGIN", "http://127.0.0.1:5175")
 PASSWORD_RECOVERY_ENABLED = env_bool("FORGE_PASSWORD_RECOVERY_ENABLED", default=True)
+DEFAULT_TRAINING_PLAN_PATH = os.getenv(
+    "FORGE_DEFAULT_TRAINING_PLAN_PATH",
+    str(BASE_DIR / "forge" / "training" / "data" / "paulo-base.xlsx"),
+)
+DEFAULT_TRAINING_PLAN_NAME = os.getenv(
+    "FORGE_DEFAULT_TRAINING_PLAN_NAME",
+    "Plano Paulo — Recomposição Corporal",
+)
 
 INSTALLED_APPS = [
     "django.contrib.admin",

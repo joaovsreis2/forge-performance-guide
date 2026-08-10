@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
 from django.core.cache import cache
+from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.http import HttpRequest, JsonResponse
 from django.middleware.csrf import get_token
@@ -583,7 +584,10 @@ def onboarding(request):
             preferences=request.user.preferences,
             cleaned_data=preference_form.cleaned_data,
         )
-    acknowledge_plan_setup(profile=request.user.profile)
+    try:
+        acknowledge_plan_setup(profile=request.user.profile)
+    except ValidationError as error:
+        return _json({"detail": "; ".join(error.messages)}, status=400)
     return _json(_user_data(request.user))
 
 

@@ -281,6 +281,15 @@ function Onboarding() {
                   currentWeightKg: weight,
                   timezone,
                 });
+                const [remotePlan, remoteProgress] = await Promise.all([
+                  forgeApi.plan(),
+                  forgeApi.progress(),
+                ]);
+                set({
+                  remotePlan,
+                  remoteProgress,
+                  xp: remoteProgress.progression?.totalExperience ?? state.xp,
+                });
                 finishOnboarding();
                 navigate({ to: "/" });
               } finally {

@@ -52,6 +52,9 @@ def complete_physical_info_step(
 
 @transaction.atomic
 def acknowledge_plan_setup(*, profile: UserProfile) -> None:
+    from forge.training.services import assign_default_training_plan
+
+    assign_default_training_plan(profile.user)
     profile.onboarding_status = UserProfile.OnboardingStatus.COMPLETED
     profile.save(update_fields=["onboarding_status", "updated_at"])
 
