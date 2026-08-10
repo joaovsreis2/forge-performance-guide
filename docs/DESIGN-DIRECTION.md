@@ -155,10 +155,10 @@ The design language must remain supportive.
 ## 4.6 Brand Identity
 
 The Forge brandmark is a stylized dark angular `F` with a chartreuse contour.
-The accent color works as the outline of the form instead of filling the whole mark. In app icon
-contexts, the surrounding square is also a contour, not a filled black tile. This creates a sharper
-product identity while still expressing measured progression, load and precise construction without
-using aggressive fitness imagery, flames, anvils or decorative effects.
+The accent color works as the outline of the form instead of filling the whole mark. App icon and
+launch contexts use the `F` directly, without a surrounding square or filled tile. This creates a
+sharper product identity while still expressing measured progression, load and precise construction
+without using aggressive fitness imagery, flames, anvils or decorative effects.
 
 The identity uses three coordinated assets:
 

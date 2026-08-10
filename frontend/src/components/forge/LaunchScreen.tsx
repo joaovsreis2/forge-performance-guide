@@ -87,9 +87,9 @@ function LaunchScreen({
             className="launch-corner launch-corner-end absolute bottom-0 right-0 size-5 border-b border-r border-primary/55"
           />
           <img
-            src="/forge-icon.svg?v=7"
+            src="/forge-icon.svg?v=8"
             alt=""
-            className="launch-icon size-20 rounded-[14px] shadow-raised"
+            className="launch-icon size-20"
             width="80"
             height="80"
           />

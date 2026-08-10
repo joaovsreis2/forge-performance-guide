@@ -1,8 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
   <title id="title">Forge</title>
   <desc id="desc">Icone do Forge com monograma F escuro e contorno verde.</desc>
-  <rect x="36" y="36" width="440" height="440" rx="88" fill="none" stroke="#222529" stroke-width="24"/>
-  <rect x="52" y="52" width="408" height="408" rx="72" fill="none" stroke="#d6ff4b" stroke-width="6" opacity=".58"/>
   <path
     d="M116 74h308l-36 84H214v44h148l-34 76H214v66l-24 90h-74V286H78l32-72h6V74Z"
     fill="#0e0f11"
