@@ -40,11 +40,11 @@ Build command: npm ci && npm run build
 Deploy command: npx nitro deploy --prebuilt
 ```
 
-Set the build variable `VITE_API_URL=/api`. Set the Cloudflare runtime variable
-`FORGE_API_ORIGIN=https://<backend-host>` without the `/api` suffix. The Worker proxies `/api/*`
-to Django so session cookies remain first-party on the default provider hostnames. The generated
-Cloudflare worker is in `frontend/.output/`. Verify `/site.webmanifest`, `/service-worker.js` and
-an authenticated `/api/me/` request after deployment.
+Set the optional build variable `VITE_API_URL=/api`; production builds also default to `/api` when
+the variable is omitted. Set the Cloudflare runtime variable `FORGE_API_ORIGIN=https://<backend-host>`
+without the `/api` suffix. The Worker proxies `/api/*` to Django so session cookies remain first-party
+on the default provider hostnames. The generated Cloudflare worker is in `frontend/.output/`. Verify
+`/site.webmanifest`, `/service-worker.js` and an authenticated `/api/me/` request after deployment.
 
 ## Release Check
 
