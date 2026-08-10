@@ -65,7 +65,7 @@ test("production build registers its service worker and reloads offline", async 
   );
 
   const brandmark = await page.request.get("/brand/brandmark.svg");
-  const favicon = await page.request.get("/favicon.ico?v=4");
+  const favicon = await page.request.get("/favicon.ico?v=7");
   expect(brandmark.ok()).toBeTruthy();
   expect(favicon.ok()).toBeTruthy();
 

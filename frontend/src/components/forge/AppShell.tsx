@@ -118,7 +118,7 @@ export function Wordmark({ small }: { small?: boolean }) {
     <span className="flex items-center gap-2">
       <img
         aria-hidden
-        src="/forge-icon.svg?v=4"
+        src="/forge-icon.svg?v=7"
         alt=""
         width="24"
         height="24"

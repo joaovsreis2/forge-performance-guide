@@ -1,4 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
   <title id="title">Forge</title>
-  <path d="M104 88h304l-32 80H200v56h144l-32 80H200v120h-96V88Z" fill="#d6ff4b"/>
+  <desc id="desc">Monograma F escuro do Forge com contorno verde.</desc>
+  <path
+    d="M116 74h308l-36 84H214v44h148l-34 76H214v66l-24 90h-74V286H78l32-72h6V74Z"
+    fill="#222529"
+    stroke="#d6ff4b"
+    stroke-linejoin="miter"
+    stroke-width="22"
+  />
+  <path d="M214 158h174l-10 22H214v-22Z" fill="#d6ff4b" opacity=".16" />
+  <path d="M214 202h148l-10 22H214v-22Z" fill="#d6ff4b" opacity=".12" />
+  <path d="M214 278h114l-14 30H214v-30Z" fill="#d6ff4b" opacity=".1" />
 </svg>
