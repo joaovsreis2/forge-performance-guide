@@ -24,7 +24,8 @@ runs migrations, collects static files and then starts Gunicorn. A deploy is hea
 
 Render Free web services block outbound SMTP ports `25`, `465` and `587`. Password recovery email
 therefore requires an HTTPS transactional-email backend on the Free plan, or a paid service that
-allows SMTP. Do not consider password recovery operational while placeholder SMTP values are set.
+allows SMTP. Keep `FORGE_PASSWORD_RECOVERY_ENABLED=false` until delivery is configured; the API
+then reports that recovery is unavailable instead of attempting a connection that cannot succeed.
 
 Before a migration, confirm that the managed PostgreSQL backup is recent. Test restoration in a
 separate database before destructive schema work. Migrations must be forward compatible with the

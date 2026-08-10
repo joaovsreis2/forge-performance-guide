@@ -31,13 +31,20 @@ SECURE_REFERRER_POLICY = "same-origin"
 SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SAMESITE = "Lax"
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = required_env("EMAIL_HOST")
-EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
-EMAIL_HOST_USER = required_env("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = required_env("EMAIL_HOST_PASSWORD")
-EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", default=True)  # noqa: F405
-DEFAULT_FROM_EMAIL = required_env("DEFAULT_FROM_EMAIL")
+PASSWORD_RECOVERY_ENABLED = env_bool(  # noqa: F405
+    "FORGE_PASSWORD_RECOVERY_ENABLED", default=False
+)
+if PASSWORD_RECOVERY_ENABLED:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = required_env("EMAIL_HOST")
+    EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+    EMAIL_HOST_USER = required_env("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = required_env("EMAIL_HOST_PASSWORD")
+    EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", default=True)  # noqa: F405
+    DEFAULT_FROM_EMAIL = required_env("DEFAULT_FROM_EMAIL")
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"
+    DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "no-reply@forge.invalid")
 
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},

@@ -81,6 +81,7 @@ DEBUG = False
 ALLOWED_HOSTS: list[str] = []
 ENVIRONMENT = os.getenv("FORGE_ENVIRONMENT", "base")
 FRONTEND_ORIGIN = os.getenv("FORGE_FRONTEND_ORIGIN", "http://127.0.0.1:5175")
+PASSWORD_RECOVERY_ENABLED = env_bool("FORGE_PASSWORD_RECOVERY_ENABLED", default=True)
 
 INSTALLED_APPS = [
     "django.contrib.admin",

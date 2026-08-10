@@ -66,6 +66,7 @@ def test_development_settings_allow_local_hosts() -> None:
 
 def test_production_settings_are_secure(monkeypatch) -> None:
     monkeypatch.setenv("DJANGO_CSRF_TRUSTED_ORIGINS", "https://forge.example")
+    monkeypatch.setenv("FORGE_PASSWORD_RECOVERY_ENABLED", "true")
     monkeypatch.setenv("EMAIL_HOST", "smtp.example.com")
     monkeypatch.setenv("EMAIL_HOST_USER", "forge")
     monkeypatch.setenv("EMAIL_HOST_PASSWORD", "test-only")
@@ -80,4 +81,5 @@ def test_production_settings_are_secure(monkeypatch) -> None:
     assert production.SESSION_COOKIE_SAMESITE == "Lax"
     assert production.CSRF_COOKIE_SAMESITE == "Lax"
     assert production.EMAIL_BACKEND == "django.core.mail.backends.smtp.EmailBackend"
+    assert production.PASSWORD_RECOVERY_ENABLED is True
     assert "*" not in production.ALLOWED_HOSTS

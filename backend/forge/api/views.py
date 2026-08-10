@@ -382,6 +382,11 @@ def recover_password(request):
     result = _options(request)
     if result:
         return result
+    if not settings.PASSWORD_RECOVERY_ENABLED:
+        return _json(
+            {"detail": "A recuperação de senha está temporariamente indisponível."},
+            status=503,
+        )
     email = _body(request).get("email", "")
     if _auth_throttled(request, "recover", email):
         return _too_many_attempts()

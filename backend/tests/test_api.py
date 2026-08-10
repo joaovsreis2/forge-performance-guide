@@ -4,6 +4,7 @@ import pytest
 from django.contrib.auth.tokens import default_token_generator
 from django.core import mail
 from django.core.cache import cache
+from django.test import override_settings
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.encoding import force_bytes
@@ -285,6 +286,22 @@ def test_api_recovers_and_resets_password(client, completed_user):
     assert len(mail.outbox) == 1
     assert reset.status_code == 200
     assert completed_user.check_password("Nova-Senha-Forge-2026") is True
+
+
+@pytest.mark.django_db
+@override_settings(PASSWORD_RECOVERY_ENABLED=False)
+def test_api_reports_when_password_recovery_is_disabled(client, completed_user):
+    response = client.post(
+        reverse("api:recover_password"),
+        data={"email": completed_user.email},
+        content_type="application/json",
+    )
+
+    assert response.status_code == 503
+    assert response.json() == {
+        "detail": "A recuperação de senha está temporariamente indisponível."
+    }
+    assert len(mail.outbox) == 0
 
 
 @pytest.mark.django_db
