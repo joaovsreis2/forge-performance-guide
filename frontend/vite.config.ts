@@ -17,8 +17,7 @@ export default defineConfig({
         wrangler: {
           name: "forge",
           vars: {
-            FORGE_API_ORIGIN:
-              "https://forge-performance-api.onrender.com",
+            FORGE_API_ORIGIN: "https://forge-performance-api.onrender.com",
           },
           observability: { enabled: true },
         },

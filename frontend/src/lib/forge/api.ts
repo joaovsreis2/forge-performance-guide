@@ -45,6 +45,12 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   return body;
 }
 
+async function refreshSessionCsrf<T>(operation: Promise<T>): Promise<T> {
+  const result = await operation;
+  csrfToken = null;
+  return result;
+}
+
 export const forgeApi = {
   me: () => request<UserData>("/me/"),
   account: () => request<AccountData>("/account/"),
@@ -64,15 +70,19 @@ export const forgeApi = {
       body: JSON.stringify(payload),
     }),
   login: (email: string, password: string) =>
-    request<UserData>("/auth/login/", {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-    }),
+    refreshSessionCsrf(
+      request<UserData>("/auth/login/", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      }),
+    ),
   register: (payload: RegistrationData) =>
-    request<UserData>("/auth/register/", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    }),
+    refreshSessionCsrf(
+      request<UserData>("/auth/register/", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }),
+    ),
   recoverPassword: (email: string) =>
     request<{ ok: boolean; debugResetUrl?: string }>("/auth/password/recover/", {
       method: "POST",
@@ -85,10 +95,12 @@ export const forgeApi = {
     }),
   logout: () => request<{ ok: boolean }>("/auth/logout/", { method: "POST" }),
   changePassword: (payload: PasswordChangeData) =>
-    request<{ ok: boolean }>("/account/password/", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    }),
+    refreshSessionCsrf(
+      request<{ ok: boolean }>("/account/password/", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }),
+    ),
   deleteAccount: (password: string) =>
     request<{ ok: boolean }>("/account/delete/", {
       method: "POST",
