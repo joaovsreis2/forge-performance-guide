@@ -211,7 +211,7 @@
 }
 
 .launch-screen[data-ready="true"] .launch-door-line {
-  opacity: 0.72;
+  opacity: 0.32;
   transition: opacity 240ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -252,11 +252,11 @@
 }
 
 .launch-screen[data-phase="leaving"] .launch-brand {
-  animation: forge-launch-brand-open 360ms cubic-bezier(0.74, 0, 0.18, 1) forwards;
+  animation: forge-launch-brand-open 180ms cubic-bezier(0.74, 0, 0.18, 1) forwards;
 }
 
 .launch-screen[data-phase="leaving"] .launch-footer {
-  animation: forge-launch-footer-open 260ms cubic-bezier(0.74, 0, 0.18, 1) forwards;
+  animation: forge-launch-footer-open 160ms cubic-bezier(0.74, 0, 0.18, 1) forwards;
 }
 
 .launch-trigger {
@@ -325,7 +325,7 @@
 
 @keyframes forge-launch-door-line {
   0% {
-    opacity: 0.72;
+    opacity: 0.45;
     transform: translate(-50%, -50%) rotate(42deg) scaleY(0.68);
   }
   36% {
