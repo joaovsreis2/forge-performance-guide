@@ -88,7 +88,7 @@ DEFAULT_TRAINING_PLAN_PATH = os.getenv(
 )
 DEFAULT_TRAINING_PLAN_NAME = os.getenv(
     "FORGE_DEFAULT_TRAINING_PLAN_NAME",
-    "Plano Paulo — Recomposição Corporal",
+    "Plano Paulo: Recomposição Corporal",
 )
 
 INSTALLED_APPS = [

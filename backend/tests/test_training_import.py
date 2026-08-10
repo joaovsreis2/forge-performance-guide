@@ -144,6 +144,7 @@ def test_training_plan_import_accepts_structured_xlsx(django_user_model, tmp_pat
     assert result.prescriptions_seen == 2
     assert plan.status == TrainingPlan.Status.ACTIVE
     assert workout.weekday == PlanWorkout.Weekday.MONDAY
+    assert workout.name == "Superior A: Ênfase Peito"
     assert workout.exercise_prescriptions.count() == 2
     assert duration_exercise.exercise.primary_metric == Exercise.PrimaryMetric.DURATION
     assert duration_exercise.target_duration_seconds == 60

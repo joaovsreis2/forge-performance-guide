@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Lock } from "lucide-react";
+import { Info, Lock } from "lucide-react";
+import { useState } from "react";
 import { AppShell } from "@/components/forge/AppShell";
 import { GateFallback, useAppGate } from "@/components/forge/Gate";
 import { ActionLink, Panel, SystemState } from "@/components/forge/ui";
@@ -26,6 +27,7 @@ export const Route = createFileRoute("/plan")({
 function PlanPage() {
   const ready = useAppGate();
   const { state } = useForge();
+  const [openNoteId, setOpenNoteId] = useState<string | null>(null);
   const plan = state.remotePlan;
   const days = plan?.days ?? [];
 
@@ -82,9 +84,24 @@ function PlanPage() {
                               descanso
                             </p>
                             {ex.note ? (
-                              <p className="mt-1.5 text-xs leading-relaxed text-subtle">
-                                {ex.note}
-                              </p>
+                              <div className="mt-2">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setOpenNoteId((current) => (current === ex.id ? null : ex.id))
+                                  }
+                                  aria-expanded={openNoteId === ex.id}
+                                  className="tap inline-flex h-8 items-center gap-1.5 rounded-md border border-border px-2.5 text-xs text-muted-foreground hover:bg-elevated hover:text-foreground"
+                                >
+                                  <Info aria-hidden className="size-3.5" />
+                                  Notas
+                                </button>
+                                {openNoteId === ex.id ? (
+                                  <p className="mt-2 rounded-md bg-elevated px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+                                    {ex.note}
+                                  </p>
+                                ) : null}
+                              </div>
                             ) : null}
                           </div>
                         </div>

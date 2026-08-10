@@ -262,7 +262,7 @@ def test_api_completes_onboarding(client, django_user_model):
     assert response.json()["onboardingCompleted"] is True
     assert user.profile.training_goal == "hypertrophy"
     plan = TrainingPlan.objects.get(user=user, status=TrainingPlan.Status.ACTIVE)
-    assert plan.name == "Plano Paulo — Recomposição Corporal"
+    assert plan.name == "Plano Paulo: Recomposição Corporal"
     assert plan.workouts.count() == 4
     assert WorkoutExercise.objects.filter(plan_workout__training_plan=plan).count() == 31
 

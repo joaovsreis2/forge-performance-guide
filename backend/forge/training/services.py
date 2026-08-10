@@ -533,7 +533,7 @@ def _read_training_plan_xlsx(
         if sheet_rows is None:
             continue
 
-        workout_name = _sheet_workout_name(sheet_rows, fallback=sheet_name)
+        workout_name = _sheet_workout_name(sheet_rows, sheet_name=sheet_name)
         header_index = _find_workout_header_index(sheet_rows)
         if header_index is None:
             errors.append(
@@ -566,7 +566,7 @@ def _read_training_plan_xlsx(
                     "weekday": str(int(weekday)),
                     "estimated_duration_minutes": "75",
                     "exercise_sequence": exercise_sequence,
-                    "exercise_name": exercise_name,
+                    "exercise_name": _clean_import_text(exercise_name),
                     "primary_metric": primary_metric,
                     "target_sets": _cell_text(row, 3),
                     "target_repetitions_min": str(reps_min or ""),
@@ -576,7 +576,7 @@ def _read_training_plan_xlsx(
                     "target_distance_meters": "",
                     "rest_seconds": str(_parse_duration_seconds(_cell_text(row, 5)) or ""),
                     "technical_notes": _technical_notes_from_xlsx_row(row),
-                    "exercise_instructions": _cell_text(row, 7),
+                    "exercise_instructions": _clean_import_text(_cell_text(row, 7)),
                 }
             )
 
@@ -837,10 +837,20 @@ def _xlsx_column_index(cell_reference: str) -> int:
     return max(0, column_number - 1)
 
 
-def _sheet_workout_name(rows: list[list[str]], *, fallback: str) -> str:
-    if rows and rows[0] and rows[0][0].strip():
-        return rows[0][0].strip().title()
-    return fallback
+def _sheet_workout_name(rows: list[list[str]], *, sheet_name: str) -> str:
+    if not rows or not rows[0] or not rows[0][0].strip():
+        return sheet_name
+
+    parts = [
+        part.strip()
+        for part in re.split(r"\s*[\u2013\u2014]\s*", rows[0][0].strip())
+        if part.strip()
+    ]
+    if parts and _normalize_header(parts[0]) == _normalize_header(sheet_name):
+        parts = parts[1:]
+    if not parts:
+        return sheet_name
+    return ": ".join(part.title() for part in parts)
 
 
 def _find_workout_header_index(rows: list[list[str]]) -> int | None:
@@ -887,9 +897,13 @@ def _parse_duration_seconds(value: str) -> int | None:
 
 def _technical_notes_from_xlsx_row(row: list[str]) -> str:
     muscle_group = _cell_text(row, 1)
-    notes = _cell_text(row, 7)
+    notes = _clean_import_text(_cell_text(row, 7))
     if muscle_group and notes:
         return f"Grupo muscular: {muscle_group}.\n{notes}"
     if muscle_group:
         return f"Grupo muscular: {muscle_group}."
     return notes
+
+
+def _clean_import_text(value: str) -> str:
+    return re.sub(r"\s*[\u2013\u2014]\s*", ", ", value).strip()

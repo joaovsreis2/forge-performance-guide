@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Info } from "lucide-react";
 import { useState } from "react";
 import { AppShell } from "@/components/forge/AppShell";
 import { GateFallback, useAppGate } from "@/components/forge/Gate";
@@ -28,6 +28,7 @@ function WorkoutPreview() {
   const navigate = useNavigate();
   const [starting, setStarting] = useState(false);
   const [startError, setStartError] = useState("");
+  const [openNoteId, setOpenNoteId] = useState<string | null>(null);
   const remoteWorkout = state.remotePlan?.days.find(
     (day) => day.id === state.remotePlan?.todayWorkoutId,
   );
@@ -102,9 +103,24 @@ function WorkoutPreview() {
                       <p className="num mt-1 text-xs text-subtle">Última vez: {ex.lastResult}</p>
                     ) : null}
                     {ex.note ? (
-                      <p className="mt-2 rounded-md bg-elevated px-3 py-2 text-xs leading-relaxed text-muted-foreground">
-                        {ex.note}
-                      </p>
+                      <div className="mt-2">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setOpenNoteId((current) => (current === ex.id ? null : ex.id))
+                          }
+                          aria-expanded={openNoteId === ex.id}
+                          className="tap inline-flex h-8 items-center gap-1.5 rounded-md border border-border px-2.5 text-xs text-muted-foreground hover:bg-elevated hover:text-foreground"
+                        >
+                          <Info aria-hidden className="size-3.5" />
+                          Notas
+                        </button>
+                        {openNoteId === ex.id ? (
+                          <p className="mt-2 rounded-md bg-elevated px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+                            {ex.note}
+                          </p>
+                        ) : null}
+                      </div>
                     ) : null}
                   </div>
                 </Panel>
