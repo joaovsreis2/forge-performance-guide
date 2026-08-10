@@ -12,7 +12,9 @@ COPY requirements/base.txt requirements/base.txt
 RUN python -m pip install --no-cache-dir -r requirements/base.txt
 
 COPY --chown=forge:forge . .
-RUN chmod +x /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh \
+    && mkdir -p /app/staticfiles /app/media \
+    && chown -R forge:forge /app/staticfiles /app/media
 
 USER forge
 
