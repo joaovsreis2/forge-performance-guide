@@ -1,10 +1,11 @@
-const CACHE = "forge-shell-v3";
+const CACHE = "forge-shell-v4";
 const SHELL = [
   "/",
   "/signin",
-  "/favicon.ico?v=3",
-  "/forge-icon.svg?v=3",
-  "/forge-icon-180.png?v=3",
+  "/favicon.ico?v=4",
+  "/forge-icon.svg?v=4",
+  "/forge-icon-180.png?v=4",
+  "/brand/brandmark.svg",
   "/forge-icon-192.png",
   "/forge-icon-512.png",
   "/site.webmanifest",

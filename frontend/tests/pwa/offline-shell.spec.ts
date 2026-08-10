@@ -52,7 +52,22 @@ test("production build registers its service worker and reloads offline", async 
 
   const manifest = await page.request.get("/site.webmanifest");
   expect(manifest.ok()).toBeTruthy();
-  expect((await manifest.json()).name).toBe("Forge Performance");
+  const manifestBody = (await manifest.json()) as {
+    name: string;
+    icons: Array<{ src: string; sizes: string }>;
+  };
+  expect(manifestBody.name).toBe("Forge Performance");
+  expect(manifestBody.icons).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ src: "/forge-icon-192.png", sizes: "192x192" }),
+      expect.objectContaining({ src: "/forge-icon-512.png", sizes: "512x512" }),
+    ]),
+  );
+
+  const brandmark = await page.request.get("/brand/brandmark.svg");
+  const favicon = await page.request.get("/favicon.ico?v=4");
+  expect(brandmark.ok()).toBeTruthy();
+  expect(favicon.ok()).toBeTruthy();
 
   await context.setOffline(true);
   const offlineApiResult = await page.evaluate(async () => {

@@ -116,15 +116,15 @@ export function AppShell({
 export function Wordmark({ small }: { small?: boolean }) {
   return (
     <span className="flex items-center gap-2">
-      <span
+      <img
         aria-hidden
-        className="grid size-6 shrink-0 place-items-center rounded-[5px] border border-primary/60 text-[0.625rem] font-bold text-primary"
-      >
-        F
-      </span>
-      <span
-        className={`font-semibold tracking-[0.22em] text-foreground ${small ? "text-[0.6875rem]" : "text-xs"}`}
-      >
+        src="/forge-icon.svg?v=4"
+        alt=""
+        width="24"
+        height="24"
+        className="size-6 shrink-0 rounded-[5px]"
+      />
+      <span className={`font-bold text-foreground ${small ? "text-[0.6875rem]" : "text-xs"}`}>
         FORGE
       </span>
     </span>

@@ -152,6 +152,22 @@ The product recognizes that users have:
 
 The design language must remain supportive.
 
+## 4.6 Brand Identity
+
+The Forge brandmark is a custom geometric `F` built from three progressively shorter planes.
+Its forward cuts express measured progression and precise construction without using aggressive
+fitness imagery, flames, anvils or decorative effects.
+
+The identity uses three coordinated assets:
+
+- the standalone brandmark for compact brand applications;
+- the horizontal logo for editorial and communication surfaces;
+- the dark app icon for favicons, launch surfaces and installed applications.
+
+The chartreuse mark is paired with disciplined sans-serif typography. The wordmark uses zero
+letter spacing and must not be replaced by a generic bordered initial. Dark and light logo variants
+preserve contrast while keeping the geometry unchanged.
+
 ---
 
 # 5. Anti-Patterns
