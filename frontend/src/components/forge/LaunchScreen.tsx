@@ -4,7 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useForge } from "@/lib/forge/store";
 
 const CONSTRUCTION_DURATION_MS = 1_100;
-const EXIT_DURATION_MS = 280;
+const EXIT_DURATION_MS = 520;
 
 type LaunchPhase = "visible" | "leaving" | "hidden";
 
@@ -60,13 +60,14 @@ function LaunchScreen({
 }) {
   return (
     <section
-      className="launch-screen fixed inset-0 z-[100] grid min-h-dvh place-items-center overflow-hidden bg-background px-6 text-foreground"
+      className="launch-screen fixed inset-0 z-[100] grid min-h-dvh place-items-center overflow-hidden bg-transparent px-6 text-foreground"
       data-phase={phase}
       data-ready={ready || undefined}
       role="status"
       aria-live="polite"
       aria-label={ready ? "Forge pronto para entrar" : "Preparando Forge"}
     >
+      <span aria-hidden className="launch-door-line absolute left-1/2 top-1/2 z-[1]" />
       <button
         type="button"
         className="launch-trigger absolute inset-0 z-10 bg-transparent disabled:cursor-wait"
@@ -75,7 +76,7 @@ function LaunchScreen({
         onClick={onActivate}
       />
 
-      <div className="launch-brand pointer-events-none flex flex-col items-center text-center">
+      <div className="launch-brand pointer-events-none relative z-[2] flex flex-col items-center text-center">
         <div className="launch-mark relative grid size-28 place-items-center">
           <span
             aria-hidden
@@ -100,7 +101,7 @@ function LaunchScreen({
         </div>
       </div>
 
-      <div className="launch-footer pointer-events-none absolute inset-x-6 bottom-8 flex flex-col items-center gap-3 sm:bottom-10">
+      <div className="launch-footer pointer-events-none absolute inset-x-6 bottom-8 z-[2] flex flex-col items-center gap-3 sm:bottom-10">
         <span aria-hidden className="launch-footer-line h-px w-12 bg-primary" />
         <p className="launch-footer-label flex min-h-5 items-center gap-2 text-[0.6875rem] font-medium text-subtle">
           {ready ? (
