@@ -1,5 +1,14 @@
-const CACHE = "forge-shell-v2";
-const SHELL = ["/", "/signin", "/favicon.ico", "/forge-icon.svg", "/site.webmanifest"];
+const CACHE = "forge-shell-v3";
+const SHELL = [
+  "/",
+  "/signin",
+  "/favicon.ico?v=3",
+  "/forge-icon.svg?v=3",
+  "/forge-icon-180.png?v=3",
+  "/forge-icon-192.png",
+  "/forge-icon-512.png",
+  "/site.webmanifest",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)));
