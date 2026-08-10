@@ -31,6 +31,11 @@ Before a migration, confirm that the managed PostgreSQL backup is recent. Test r
 separate database before destructive schema work. Migrations must be forward compatible with the
 currently deployed application during rollout.
 
+Public PostgreSQL tables run with Row Level Security enabled and forced. The Django backend role
+receives the `forge_backend_full_access` policy because authorization is enforced by Django sessions,
+services and query scoping. Supabase client roles such as `anon` and `authenticated` do not receive
+table policies; direct browser/database access must go through the Django API instead.
+
 ## Frontend
 
 Connect `frontend/` to Cloudflare Workers and use:
