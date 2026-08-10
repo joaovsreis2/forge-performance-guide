@@ -13,6 +13,9 @@ export default defineConfig({
     nitro({
       preset: "cloudflare_module",
       compatibilityDate: "2026-08-04",
+      cloudflare: {
+        wrangler: { name: "forge" },
+      },
     }),
     viteReact(),
   ],
