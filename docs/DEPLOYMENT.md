@@ -4,6 +4,13 @@ Status: Release candidate
 
 The frontend and backend deploy independently. Use HTTPS URLs in every production variable.
 
+Current production endpoints:
+
+```text
+Frontend: https://forge.joaovsreis2.workers.dev
+Backend:  https://forge-performance-api.onrender.com
+```
+
 ## Backend
 
 Create a Render Blueprint from `render.yaml` and provide the variables marked `sync: false`.
@@ -14,6 +21,10 @@ Set both `DJANGO_CSRF_TRUSTED_ORIGINS` and `FORGE_FRONTEND_ORIGIN` to the exact 
 origin. Configure SMTP credentials for password recovery. The container waits for PostgreSQL,
 runs migrations, collects static files and then starts Gunicorn. A deploy is healthy only when
 `/health/` returns HTTP 200.
+
+Render Free web services block outbound SMTP ports `25`, `465` and `587`. Password recovery email
+therefore requires an HTTPS transactional-email backend on the Free plan, or a paid service that
+allows SMTP. Do not consider password recovery operational while placeholder SMTP values are set.
 
 Before a migration, confirm that the managed PostgreSQL backup is recent. Test restoration in a
 separate database before destructive schema work. Migrations must be forward compatible with the

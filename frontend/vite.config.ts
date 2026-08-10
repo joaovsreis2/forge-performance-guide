@@ -14,7 +14,14 @@ export default defineConfig({
       preset: "cloudflare_module",
       compatibilityDate: "2026-08-04",
       cloudflare: {
-        wrangler: { name: "forge" },
+        wrangler: {
+          name: "forge",
+          vars: {
+            FORGE_API_ORIGIN:
+              "https://forge-performance-api.onrender.com",
+          },
+          observability: { enabled: true },
+        },
       },
     }),
     viteReact(),

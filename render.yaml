@@ -1,7 +1,8 @@
 services:
   - type: web
-    name: forge-api
+    name: forge-performance-api
     runtime: docker
+    plan: free
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
     healthCheckPath: /health/
